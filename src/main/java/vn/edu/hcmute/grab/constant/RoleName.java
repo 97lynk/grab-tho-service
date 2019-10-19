@@ -1,4 +1,4 @@
-package vn.edu.hcmute.grab.entity;
+package vn.edu.hcmute.grab.constant;
 
 public enum RoleName {
     ROLE_USER,

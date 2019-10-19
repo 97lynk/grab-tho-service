@@ -12,9 +12,20 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.social.config.support.ProviderConfigurationSupport;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.connect.web.ProviderSignInController;
+import org.springframework.social.connect.web.ProviderSignInInterceptor;
+import org.springframework.social.support.URIBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.view.RedirectView;
 import vn.edu.hcmute.grab.config.social.facebook.FacebookConnectionSignup;
 import vn.edu.hcmute.grab.config.social.facebook.FacebookSignInAdapter;
 
@@ -59,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login*", "/signin/**", "/signup/**").permitAll()
+                .antMatchers("/login*", "/signin/**", "/signup/**", "/index/**", "/oauth/authorize/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/oauth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/tokens").permitAll()
                 .and().csrf().disable();
@@ -70,15 +81,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(STATIC_RESOURCES);
     }
 
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private FacebookConnectionSignup facebookConnectionSignup;
-
     @Bean
     // @Primary
     public ProviderSignInController providerSignInController() {
-        return new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, facebookSignInAdapter);
+        ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, facebookSignInAdapter);
+        return providerSignInController;
     }
 }

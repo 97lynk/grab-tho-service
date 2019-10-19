@@ -1,34 +1,42 @@
 package vn.edu.hcmute.grab.dto;
 
 import lombok.*;
-import vn.edu.hcmute.grab.entity.RoleName;
+import vn.edu.hcmute.grab.constant.RoleName;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class UserDTO {
+public class UserDto {
+
     private Long id;
 
-    private String fullName;
+    private String username;
 
     private String email;
+
+    private String fullName;
 
     private String address;
 
     private String phone;
 
-    private boolean block;
-
-    private String b64;
-
-    private String fileType;
+    private String avatar;
 
     @Enumerated(EnumType.STRING)
-    private List<RoleName> role;
+    private List<RoleName> roles;
+
+    @Builder
+    public UserDto(Long id, String username, String email, String fullName, String address, String phone, String avatar, List<RoleName> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.fullName = fullName;
+        this.address = address;
+        this.phone = phone;
+        this.avatar = avatar;
+        this.roles = roles;
+    }
 }

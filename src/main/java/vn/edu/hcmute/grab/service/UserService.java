@@ -7,10 +7,9 @@ package vn.edu.hcmute.grab.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import vn.edu.hcmute.grab.dto.AccountDTO;
-import vn.edu.hcmute.grab.dto.UserDTO;
+import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
-import vn.edu.hcmute.grab.entity.RoleName;
+import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.entity.User;
 
 import java.util.List;
@@ -33,11 +32,11 @@ public interface UserService {
 
     User selectUserById(Long id);
 
-    User changeProfile(UserDTO userDTO);
+    User changeProfile(UserDto userDTO);
 
     User changeRole(Long id, List<RoleName> role);
 
-    User registration(AccountDTO accountDto);
+//    User registration(AccountDTO accountDto);
 
     void changeAvatar(Long id, byte[] fileBytes);
 

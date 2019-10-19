@@ -1,33 +1,27 @@
-package vn.edu.hcmute.grab.entity;
+package vn.edu.hcmute.grab.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import vn.edu.hcmute.grab.constant.RequestStatus;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@Builder
-@Entity
-@Table
-public class Request {
+public class RequestDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String textDescription;
 
     private String[] imagesDescription;
 
-    private Location location;
+    private String address;
+
+    private double longitude;
+
+    private double latitude;
 
     private LocalDateTime createAt;
 
-    @Enumerated(value = EnumType.STRING)
     private RequestStatus status;
 
     private boolean feedBack;
@@ -36,7 +30,21 @@ public class Request {
 
     private String comment;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User users;
+    private Long userId;
+
+    @Builder
+    public RequestDto(Long id, String textDescription, String[] imagesDescription, String address, double longitude, double latitude, LocalDateTime createAt, RequestStatus status, boolean feedBack, float rate, String comment, Long userId) {
+        this.id = id;
+        this.textDescription = textDescription;
+        this.imagesDescription = imagesDescription;
+        this.address = address;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.createAt = createAt;
+        this.status = status;
+        this.feedBack = feedBack;
+        this.rate = rate;
+        this.comment = comment;
+        this.userId = userId;
+    }
 }

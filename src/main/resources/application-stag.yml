@@ -2,9 +2,9 @@
 # DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
 spring:
   datasource:
-    url: dbc:mysql://google/grab_tho?cloudSqlInstance=motel-242404:asia-southeast1:moteldb&socketFactory=com.google.cloud.sql.mysql.SocketFactory&user=root&password=123&useSSL=false
-    username: root
-    password: 123
+    url: jdbc:mysql://remotemysql.com:3306/goIcTti1V0?useSSL=false&characterEncoding=utf8&createDatabaseIfNotExist=true
+    username: goIcTti1V0
+    password: ZmWSZYNgdx
 #  initialization-mode: always
 # Hibernate
 # The SQL dialect makes Hibernate generate better SQL for the chosen database

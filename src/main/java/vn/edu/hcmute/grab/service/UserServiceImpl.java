@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package vn.edu.hcmute.grab.service;
 
 import org.hibernate.ObjectNotFoundException;
@@ -12,16 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmute.grab.dto.AccountDTO;
-import vn.edu.hcmute.grab.dto.UserDTO;
+import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
-import vn.edu.hcmute.grab.entity.RoleName;
+import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.entity.User;
-import vn.edu.hcmute.grab.exception.UserException;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeProfile(UserDTO userDTO) {
+    public User changeProfile(UserDto userDTO) {
         User user = selectUserById(userDTO.getId());
         user.setPhone(userDTO.getPhone());
         user.setFullName(userDTO.getFullName());
@@ -102,26 +94,26 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    @Override
-    public User registration(AccountDTO accountDto) {
-        userRepository.findByEmail(accountDto.getEmail()).ifPresent((user) -> new UserException("Email đã tồn tại"));
-
-        User user = new User();
-        if (accountDto.getFullName().trim().length() <= 0)
-            user.setFullName(user.getEmail());
-        else
-            user.setFullName(accountDto.getFullName());
-        user.setEmail(accountDto.getEmail());
-        user.setAddress(accountDto.getAddress());
-        user.setPhone(accountDto.getPhone());
-        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
-        if (accountDto.getRole() != null && !accountDto.getRole().isEmpty()) {
-            user.setRoles(accountDto.getRole().stream().map(this::selectRoleByName).collect(Collectors.toList()));
-        } else {
-            user.setRoles(Arrays.asList(selectRoleByName(RoleName.ROLE_USER)));
-        }
-        return userRepository.save(user);
-    }
+//    @Override
+//    public User registration(AccountDTO accountDto) {
+//        userRepository.findByEmail(accountDto.getEmail()).ifPresent((user) -> new UserException("Email đã tồn tại"));
+//
+//        User user = new User();
+//        if (accountDto.getFullName().trim().length() <= 0)
+//            user.setFullName(user.getEmail());
+//        else
+//            user.setFullName(accountDto.getFullName());
+//        user.setEmail(accountDto.getEmail());
+//        user.setAddress(accountDto.getAddress());
+//        user.setPhone(accountDto.getPhone());
+//        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
+//        if (accountDto.getRole() != null && !accountDto.getRole().isEmpty()) {
+//            user.setRoles(accountDto.getRole().stream().map(this::selectRoleByName).collect(Collectors.toList()));
+//        } else {
+//            user.setRoles(Arrays.asList(selectRoleByName(RoleName.ROLE_USER)));
+//        }
+//        return userRepository.save(user);
+//    }
 
     @Override
     public void changeAvatar(Long id, byte[] fileBytes) {
