@@ -1,7 +1,10 @@
 package vn.edu.hcmute.grab.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 import vn.edu.hcmute.grab.constant.RoleName;
 

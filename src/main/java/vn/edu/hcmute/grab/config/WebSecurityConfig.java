@@ -12,24 +12,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.social.config.support.ProviderConfigurationSupport;
-import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
-import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.connect.web.ProviderSignInController;
-import org.springframework.social.connect.web.ProviderSignInInterceptor;
-import org.springframework.social.support.URIBuilder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.servlet.view.RedirectView;
-import vn.edu.hcmute.grab.config.social.facebook.FacebookConnectionSignup;
 import vn.edu.hcmute.grab.config.social.facebook.FacebookSignInAdapter;
-
-import javax.sql.DataSource;
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {

@@ -1,6 +1,6 @@
 package vn.edu.hcmute.grab.entity;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;

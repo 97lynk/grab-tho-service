@@ -1,6 +1,9 @@
 package vn.edu.hcmute.grab.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import vn.edu.hcmute.grab.constant.RoleName;
