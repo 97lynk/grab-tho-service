@@ -17,7 +17,10 @@ import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.ProviderSignInAttempt;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 import vn.edu.hcmute.grab.config.social.facebook.FacebookSignInAdapter;
@@ -50,11 +53,6 @@ public class AuhController {
     @Autowired
     private FacebookSignInAdapter facebookSignInAdapter;
 
-    @RequestMapping("/oauth/social")
-    public String redirectTokenToClient(@RequestParam("token") String token) {
-        return "redirect:http://localhost:8100/#/login?token=" + token;
-    }
-
     @Autowired
     private ConnectionFactoryLocator connectionFactoryLocator;
 
@@ -71,7 +69,6 @@ public class AuhController {
         OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
         AccessGrant accessGrant = new AccessGrant(accessToken, "public_profile", null, expireAt);
         Connection<?> connection = connectionFactory.createConnection(accessGrant);
-//        RedirectView redirectView = handleSignIn(connection, connectionFactory, request);
 
         List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
         if (userIds.size() == 0) {

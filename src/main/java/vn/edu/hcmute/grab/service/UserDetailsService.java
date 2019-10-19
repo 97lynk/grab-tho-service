@@ -6,8 +6,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.constant.RoleName;
+import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.UserRepository;
 
