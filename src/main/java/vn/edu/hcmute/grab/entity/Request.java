@@ -7,6 +7,7 @@ import vn.edu.hcmute.grab.constant.RequestStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
@@ -49,8 +50,10 @@ public class Request {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Builder
+    @OneToMany(mappedBy="request", fetch = FetchType.LAZY)
+    private List<RequestHistory> requestHistories;
 
+    @Builder
     public Request(String textDescription, String[] imagesDescription, String address, double longitude, double latitude, LocalDateTime createAt, RequestStatus status, boolean feedBack, float rate, String comment, User user) {
         this.textDescription = textDescription;
         this.imagesDescription = imagesDescription;

@@ -56,6 +56,9 @@ public class User {
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<Request> requests;
 
+    @OneToOne(mappedBy = "user")
+    private Repairer repairer;
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList(
                 roles.stream()

@@ -13,6 +13,7 @@ import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
 
@@ -34,6 +35,12 @@ public class RequestService {
     public Page<RequestDto> getPageRequestOfUser(Pageable pageable, String username) {
         userService.selectUserByUsername(username);
         return requestRepository.findAllByUserUsername(pageable, username)
+                .map(REQUEST_MAPPER::entityToDto);
+    }
+
+    public Page<RequestDto> getPageRequestOfUserAndFilterByStatus(Pageable pageable, String username, List<RequestStatus> statuses ) {
+        userService.selectUserByUsername(username);
+        return requestRepository.findAllByUserUsernameAndStatusIn(pageable, username, statuses)
                 .map(REQUEST_MAPPER::entityToDto);
     }
 

@@ -1,10 +1,7 @@
 package vn.edu.hcmute.grab.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import vn.edu.hcmute.grab.constant.RequestStatus;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -27,6 +24,10 @@ public class RequestDto {
 
     private RequestStatus status;
 
+    private int noReceiver;
+
+    private int noQuote;
+
     private boolean feedBack;
 
     private float rate;
@@ -36,7 +37,9 @@ public class RequestDto {
     private Long userId;
 
     @Builder
-    public RequestDto(Long id, String textDescription, String[] imagesDescription, String address, double longitude, double latitude, LocalDateTime createAt, RequestStatus status, boolean feedBack, float rate, String comment, Long userId) {
+    public RequestDto(Long id, String textDescription, String[] imagesDescription, String address, double longitude,
+                      double latitude, LocalDateTime createAt, RequestStatus status, int noReceiver, int noQuote,
+                      boolean feedBack, float rate, String comment, Long userId) {
         this.id = id;
         this.textDescription = textDescription;
         this.imagesDescription = imagesDescription;
@@ -45,6 +48,8 @@ public class RequestDto {
         this.latitude = latitude;
         this.createAt = createAt;
         this.status = status;
+        this.noReceiver = noReceiver;
+        this.noQuote = noQuote;
         this.feedBack = feedBack;
         this.rate = rate;
         this.comment = comment;
