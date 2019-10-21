@@ -53,8 +53,14 @@ public class Request {
     @OneToMany(mappedBy="request", fetch = FetchType.LAZY)
     private List<RequestHistory> requestHistories;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "repairer_id", referencedColumnName = "id", nullable = true)
+    private Repairer repairer;
+
     @Builder
-    public Request(String textDescription, String[] imagesDescription, String address, double longitude, double latitude, LocalDateTime createAt, RequestStatus status, boolean feedBack, float rate, String comment, User user) {
+    public Request(String textDescription, String[] imagesDescription, String address, double longitude, double latitude,
+                   LocalDateTime createAt, RequestStatus status, int noReceiver, int noQuote, long point, boolean feedBack,
+                   float rate, String comment, User user, List<RequestHistory> requestHistories, Repairer repairer) {
         this.textDescription = textDescription;
         this.imagesDescription = imagesDescription;
         this.address = address;
@@ -62,9 +68,14 @@ public class Request {
         this.latitude = latitude;
         this.createAt = createAt;
         this.status = status;
+        this.noReceiver = noReceiver;
+        this.noQuote = noQuote;
+        this.point = point;
         this.feedBack = feedBack;
         this.rate = rate;
         this.comment = comment;
         this.user = user;
+        this.requestHistories = requestHistories;
+        this.repairer = repairer;
     }
 }

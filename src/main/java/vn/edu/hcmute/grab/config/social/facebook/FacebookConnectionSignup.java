@@ -31,7 +31,7 @@ public class FacebookConnectionSignup implements ConnectionSignUp {
                 .username(connection.getKey().getProviderUserId())
                 .password(passwordEncoder.encode("tuan"))
                 .fullName(connection.getDisplayName())
-                .roles(roleRepository.findAllByName(RoleName.ROLE_USER))
+                .roles(roleRepository.findAllByName(RoleName.ROLE_CUSTOMER))
                 .avatar(connection.getImageUrl())
                 .block(false)
                 .build();

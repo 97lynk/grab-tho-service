@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class RequestDto {
+public class RecentRequestDto {
 
     private Long id;
 
@@ -31,18 +31,11 @@ public class RequestDto {
 
     private int noQuote;
 
-    private boolean feedBack;
-
-    private float rate;
-
-    private String comment;
-
     private Long userId;
 
     @Builder
-    public RequestDto(Long id, String textDescription, String[] imagesDescription, String address, double longitude,
-                      double latitude, LocalDateTime createAt, RequestStatus status, int noReceiver, int noQuote,
-                      boolean feedBack, float rate, String comment, Long userId) {
+    public RecentRequestDto(Long id, String textDescription, String[] imagesDescription, String address, double longitude,
+                            double latitude, LocalDateTime createAt, RequestStatus status, int noReceiver, int noQuote, Long userId) {
         this.id = id;
         this.textDescription = textDescription;
         this.imagesDescription = imagesDescription;
@@ -53,9 +46,6 @@ public class RequestDto {
         this.status = status;
         this.noReceiver = noReceiver;
         this.noQuote = noQuote;
-        this.feedBack = feedBack;
-        this.rate = rate;
-        this.comment = comment;
         this.userId = userId;
     }
 }

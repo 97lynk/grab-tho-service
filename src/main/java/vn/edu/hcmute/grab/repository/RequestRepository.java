@@ -7,11 +7,14 @@ import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.entity.Request;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
     Page<Request> findAllByUserUsername(Pageable pageable, String username);
 
-    Page<Request> findAllByUserUsernameAndStatusIn(Pageable pageable, String username, List<RequestStatus>  statuses);
+    Optional<Request> findByIdAndUserUsername(Long id, String username);
+
+    Page<Request> findAllByUserUsernameAndStatusIn(Pageable pageable, String username, List<RequestStatus> statuses);
 
 }

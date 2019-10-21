@@ -1,6 +1,7 @@
 package vn.edu.hcmute.grab.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
@@ -32,19 +34,32 @@ public class RequestService {
         this.userService = userService;
     }
 
-    public Page<RequestDto> getPageRequestOfUser(Pageable pageable, String username) {
+    public Page<?> getPageRequestOfUser(Pageable pageable, String username) {
         userService.selectUserByUsername(username);
         return requestRepository.findAllByUserUsername(pageable, username)
-                .map(REQUEST_MAPPER::entityToDto);
+                .map(REQUEST_MAPPER::entityToRecentDto);
     }
 
-    public Page<RequestDto> getPageRequestOfUserAndFilterByStatus(Pageable pageable, String username, List<RequestStatus> statuses ) {
+    public RequestDto getRequest(Long id, String username) {
         userService.selectUserByUsername(username);
-        return requestRepository.findAllByUserUsernameAndStatusIn(pageable, username, statuses)
-                .map(REQUEST_MAPPER::entityToDto);
+        Request request = requestRepository.findByIdAndUserUsername(id, username)
+                .orElseThrow(() -> new ObjectNotFoundException(id, Request.class.getSimpleName()));
+
+        return REQUEST_MAPPER.entityToDto(request);
     }
 
-    public RequestDto addNewRequest(AddRequestDto requestDto, String username){
+    public Page<?> getPageRequestOfUserAndFilterByStatus(Pageable pageable, String username, List<RequestStatus> statuses) {
+        userService.selectUserByUsername(username);
+        Page<Request> requests = requestRepository.findAllByUserUsernameAndStatusIn(pageable, username, statuses);
+        if (statuses.containsAll(Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED)))
+            return requests.map(REQUEST_MAPPER::entityToRecentDto);
+        else if(statuses.containsAll(Arrays.asList(RequestStatus.ACCEPTED, RequestStatus.WAITING)))
+            return requests.map(REQUEST_MAPPER::entityToAcceptedDto);
+
+        return requests.map(REQUEST_MAPPER::entityToDto);
+    }
+
+    public RequestDto addNewRequest(AddRequestDto requestDto, String username) {
         User user = userService.selectUserByUsername(username);
         Request request = REQUEST_MAPPER.dtoToEntity(requestDto);
         request.setUser(user);

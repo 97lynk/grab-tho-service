@@ -17,6 +17,7 @@ public class RequestHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private ActionStatus status;
 
     private long point;
