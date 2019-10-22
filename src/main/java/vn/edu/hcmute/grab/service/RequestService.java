@@ -55,6 +55,8 @@ public class RequestService {
             return requests.map(REQUEST_MAPPER::entityToRecentDto);
         else if(statuses.containsAll(Arrays.asList(RequestStatus.ACCEPTED, RequestStatus.WAITING)))
             return requests.map(REQUEST_MAPPER::entityToAcceptedDto);
+        else if(statuses.containsAll(Arrays.asList(RequestStatus.COMPLETED, RequestStatus.FEEDBACK, RequestStatus.CLOSED)))
+            return requests.map(REQUEST_MAPPER::entityToCompletedDto);
 
         return requests.map(REQUEST_MAPPER::entityToDto);
     }

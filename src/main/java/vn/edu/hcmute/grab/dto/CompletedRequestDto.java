@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AcceptedRequestDto {
+public class CompletedRequestDto {
 
     private Long id;
 
@@ -33,10 +33,16 @@ public class AcceptedRequestDto {
 
     private int noQuote;
 
-    private Long userId;
-
     private int point;
 
+    private boolean feedBack;
+
+    private float rate;
+
+    private String comment;
+
     private String repairerName;
+
+    private Long userId;
 
 }
