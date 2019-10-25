@@ -1,5 +1,7 @@
 package vn.edu.hcmute.grab.service;
 
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.ActionStatus;
@@ -34,5 +36,13 @@ public class RequestHistoryService {
                 .collect(Collectors.toList());
     }
 
+    public RequestHistory getRequestHistory(Long requestId, Long repairerId, ActionStatus status){
+        return requestHistoryRepository.findByRequestIdAndRepairerIdAndStatus(requestId, repairerId, status).
+                orElseThrow(() -> new RuntimeException("Repairer didn't joined in request"));
+    }
 
+
+    public List<RequestHistory> getRequestHistory(Long requestId, Long repairerId){
+        return requestHistoryRepository.findByRequestIdAndRepairerId(requestId, repairerId);
+    }
 }

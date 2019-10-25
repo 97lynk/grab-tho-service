@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
+import vn.edu.hcmute.grab.config.social.facebook.FacebookConnectionSignup;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.UserRepository;
 import vn.edu.hcmute.grab.service.AuthService;
@@ -38,13 +39,16 @@ public class AuhController {
 
     private final ConnectionFactoryLocator connectionFactoryLocator;
 
+    private final FacebookConnectionSignup facebookConnectionSignup;
+
     @Autowired
     public AuhController(UserRepository userRepository, AuthService authService, UsersConnectionRepository usersConnectionRepository,
-                         ConnectionFactoryLocator connectionFactoryLocator) {
+                         ConnectionFactoryLocator connectionFactoryLocator, FacebookConnectionSignup facebookConnectionSignup) {
         this.userRepository = userRepository;
         this.authService = authService;
         this.usersConnectionRepository = usersConnectionRepository;
         this.connectionFactoryLocator = connectionFactoryLocator;
+        this.facebookConnectionSignup = facebookConnectionSignup;
     }
 
     @PostMapping("/login/{providerId}")
@@ -69,6 +73,7 @@ public class AuhController {
         if (userIds.size() == 0) {
             ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection);
             new HttpSessionSessionStrategy().setAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
+           facebookConnectionSignup.execute(connection);
             return receiveFacebookAccessToken(providerId, fbAccessToken, request);
         } else if (userIds.size() == 1) {
             usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);

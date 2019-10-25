@@ -1,7 +1,6 @@
 package vn.edu.hcmute.grab.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.edu.hcmute.grab.constant.RequestStatus;

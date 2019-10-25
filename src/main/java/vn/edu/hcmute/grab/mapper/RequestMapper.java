@@ -13,7 +13,8 @@ public interface RequestMapper {
     RequestMapper REQUEST_MAPPER =  Mappers.getMapper(RequestMapper.class);
 
     @Mappings({
-            @Mapping(source = "user.id", target = "userId")
+            @Mapping(source = "user.id", target = "userId"),
+            @Mapping(source = "repairer.id", target = "repairerId")
     })
     RequestDto entityToDto(Request request);
 
