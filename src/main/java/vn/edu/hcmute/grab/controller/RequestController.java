@@ -13,11 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
+import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.AddRequestDto;
 import vn.edu.hcmute.grab.dto.RequestDto;
-import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.service.FileStorageService;
 import vn.edu.hcmute.grab.service.RequestHistoryService;
 import vn.edu.hcmute.grab.service.RequestService;
@@ -48,16 +47,24 @@ public class RequestController {
                                        @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,
                                        Authentication auth) {
         log.info("Get a page of request, user {}, filter status={}", auth.getName(), statuses);
-        if (statuses.isEmpty())
-            return requestService.getPageRequestOfUser(pageable, auth.getName());
-        else
-            return filterRequest(pageable, statuses, auth);
+
+        if (isCustomer(auth)) {
+            if (statuses.isEmpty())
+                return requestService.getPageRequestOfUser(pageable, auth.getName());
+            else
+                return filterRequest(pageable, statuses, auth);
+        } else {
+            return requestService.getPageRequestAndFilterByStatus(pageable, statuses);
+        }
     }
 
     @GetMapping("/{id}")
     public RequestDto getRequestById(@PathVariable("id") Long id, Authentication auth) {
         log.info("Get a request by id " + id);
-        return requestService.getRequest(id, auth.getName());
+        if (isCustomer(auth))
+            return requestService.getRequest(id, auth.getName());
+        else
+            return requestService.getRequest(id);
     }
 
     @PostMapping
@@ -96,5 +103,9 @@ public class RequestController {
                                      @RequestParam("repairer_id") Long repairerId,
                                      OAuth2Authentication auth) {
         return requestService.acceptRepairer(requestId, repairerId, auth.getName());
+    }
+
+    private boolean isCustomer(Authentication auth) {
+        return auth.getAuthorities().contains(RoleName.ROLE_CUSTOMER);
     }
 }

@@ -19,18 +19,18 @@ public interface RequestMapper {
     RequestDto entityToDto(Request request);
 
     @Mappings({
-            @Mapping(source = "user.id", target = "userId")
+            @Mapping(source = "user.fullName", target = "userFullName")
     })
     RecentRequestDto entityToRecentDto(Request request);
 
     @Mappings({
-            @Mapping(source = "user.id", target = "userId"),
+//            @Mapping(source = "user.id", target = "userId"),
             @Mapping(source = "repairer.user.fullName", target = "repairerName"),
     })
     AcceptedRequestDto entityToAcceptedDto(Request request);
 
     @Mappings({
-            @Mapping(source = "user.id", target = "userId"),
+//            @Mapping(source = "user.id", target = "userId"),
             @Mapping(source = "repairer.user.fullName", target = "repairerName"),
     })
     CompletedRequestDto entityToCompletedDto(Request request);

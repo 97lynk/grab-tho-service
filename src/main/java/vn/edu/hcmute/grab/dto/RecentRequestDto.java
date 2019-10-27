@@ -34,4 +34,6 @@ public class RecentRequestDto {
 
     private Long userId;
 
+    private String userFullName;
+
 }

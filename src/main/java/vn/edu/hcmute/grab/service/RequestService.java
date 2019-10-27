@@ -57,10 +57,26 @@ public class RequestService {
 
         return REQUEST_MAPPER.entityToDto(request);
     }
+    public RequestDto getRequest(Long id) {
+        Request request = requestRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(id, Request.class.getSimpleName()));
+
+        return REQUEST_MAPPER.entityToDto(request);
+    }
 
     public Page<?> getPageRequestOfUserAndFilterByStatus(Pageable pageable, String username, List<RequestStatus> statuses) {
         userService.selectUserByUsername(username);
         Page<Request> requests = requestRepository.findAllByUserUsernameAndStatusIn(pageable, username, statuses);
+        return requestMappingByStatus(requests, statuses);
+    }
+
+    public Page<?> getPageRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses) {
+        Page<Request> requests = requestRepository.findAllByStatusIn(pageable, statuses);
+        return requestMappingByStatus(requests, statuses);
+    }
+
+    private Page<?> requestMappingByStatus(Page<Request> requests, List<RequestStatus> statuses) {
+
         if (statuses.containsAll(Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED)))
             return requests.map(REQUEST_MAPPER::entityToRecentDto);
         else if (statuses.containsAll(Arrays.asList(RequestStatus.ACCEPTED, RequestStatus.WAITING)))
