@@ -14,7 +14,8 @@ public interface RequestMapper {
 
     @Mappings({
             @Mapping(source = "user.id", target = "userId"),
-            @Mapping(source = "repairer.id", target = "repairerId")
+            @Mapping(source = "repairer.id", target = "repairerId"),
+            @Mapping(source = "user.fullName", target = "userFullName")
     })
     RequestDto entityToDto(Request request);
 

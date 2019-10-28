@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface RequestHistoryRepository extends JpaRepository<RequestHistory, Long> {
 
-    List<RequestHistory> findAllByRequestIdAndStatusIsIn(Long requestId, List<ActionStatus> actions);
+    List<RequestHistory> findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(Long requestId, List<ActionStatus> actions);
 
     Optional<RequestHistory> findByRequestIdAndRepairerIdAndStatus(Long requestId, Long repairerId, ActionStatus status);
 
-    List<RequestHistory> findByRequestIdAndRepairerId(Long requestId, Long repairerId);
+    List<RequestHistory> findByRequestIdInAndRepairerId(List<Long> requestIds, Long repairerId);
 }

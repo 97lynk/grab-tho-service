@@ -9,6 +9,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,16 @@ public class RequestController {
         this.fileStorageService = fileStorageService;
     }
 
+    /**
+     * get list request by status for customer and repairer
+     *
+     * @param pageable
+     * @param statuses
+     * @param auth
+     * @return
+     */
     @GetMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public Page<?> getAllRequestOfUser(@PageableDefault Pageable pageable,
                                        @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,
                                        Authentication auth) {
@@ -58,7 +68,15 @@ public class RequestController {
         }
     }
 
+    /**
+     * get a request
+     *
+     * @param id
+     * @param auth
+     * @return
+     */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public RequestDto getRequestById(@PathVariable("id") Long id, Authentication auth) {
         log.info("Get a request by id " + id);
         if (isCustomer(auth))
@@ -67,17 +85,28 @@ public class RequestController {
             return requestService.getRequest(id);
     }
 
+    /**
+     * post a request by customer
+     *
+     * @param requestDto
+     * @param auth
+     * @return
+     */
     @PostMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
     public RequestDto newRequest(@RequestBody AddRequestDto requestDto, Authentication auth) {
         log.info("Add new request, user " + auth.getName());
         return requestService.addNewRequest(requestDto, auth.getName());
     }
 
-    public Page<?> filterRequest(Pageable pageable, List<RequestStatus> statuses, Authentication auth) {
-        return requestService.getPageRequestOfUserAndFilterByStatus(pageable, auth.getName(), statuses);
-    }
-
+    /**
+     * upload image description
+     *
+     * @param files
+     * @return
+     */
     @PostMapping("/description-images")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public ResponseEntity<?> uploadFile(@RequestParam(value = "images", defaultValue = "[]") List<MultipartFile> files) {
         List<String> urlImages = files.stream()
                 .map(fileStorageService::storeFileImage)
@@ -86,7 +115,14 @@ public class RequestController {
         return ResponseEntity.ok(urlImages);
     }
 
+    /**
+     * get image description
+     *
+     * @param fileName
+     * @return
+     */
     @GetMapping("/description-images/{fileName}")
+//    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public ResponseEntity<?> downloadFile(@PathVariable(value = "fileName") String fileName) {
 
         // Load file as Resource
@@ -98,14 +134,34 @@ public class RequestController {
                 .body(resource);
     }
 
+    /**
+     * accept repairer
+     *
+     * @param requestId
+     * @param repairerId
+     * @param auth
+     * @return
+     */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
     public RequestDto acceptRepairer(@PathVariable("id") Long requestId,
                                      @RequestParam("repairer_id") Long repairerId,
                                      OAuth2Authentication auth) {
         return requestService.acceptRepairer(requestId, repairerId, auth.getName());
     }
 
+    @GetMapping("/accepted")
+    @PreAuthorize("hasAnyRole('REPAIRER')")
+    public RequestDto getAcceptedRequest(Authentication auth) {
+        return requestService.getAcceptedRequestOfRepairer(auth.getName());
+    }
+
     private boolean isCustomer(Authentication auth) {
         return auth.getAuthorities().contains(RoleName.ROLE_CUSTOMER);
     }
+
+    public Page<?> filterRequest(Pageable pageable, List<RequestStatus> statuses, Authentication auth) {
+        return requestService.getPageRequestOfUserAndFilterByStatus(pageable, auth.getName(), statuses);
+    }
+
 }

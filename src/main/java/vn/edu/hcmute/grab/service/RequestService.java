@@ -57,6 +57,7 @@ public class RequestService {
 
         return REQUEST_MAPPER.entityToDto(request);
     }
+
     public RequestDto getRequest(Long id) {
         Request request = requestRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException(id, Request.class.getSimpleName()));
@@ -116,5 +117,11 @@ public class RequestService {
         request.setStatus(RequestStatus.ACCEPTED);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
+    }
+
+    public RequestDto getAcceptedRequestOfRepairer(String usernameOfRepairer) {
+        Request request = requestRepository.findByRepairerUserUsername(usernameOfRepairer)
+                .orElseThrow(() -> new ObjectNotFoundException(usernameOfRepairer, Request.class.getSimpleName()));
+        return REQUEST_MAPPER.entityToDto(request);
     }
 }

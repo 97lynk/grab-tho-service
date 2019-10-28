@@ -43,5 +43,7 @@ public class RequestDto {
 
     private Long userId;
 
+    private String userFullName;
+
     private Long repairerId;
 }

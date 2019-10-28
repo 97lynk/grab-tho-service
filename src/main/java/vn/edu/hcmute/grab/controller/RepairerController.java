@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hcmute.grab.dto.RepairerDto;
 import vn.edu.hcmute.grab.service.RepairerService;
+import vn.edu.hcmute.grab.service.RequestService;
 
 @RestController
 @RequestMapping("/repairers")
@@ -14,14 +15,17 @@ public class RepairerController {
 
     private final RepairerService repairerService;
 
+    private final RequestService requestService;
+
     @Autowired
-    public RepairerController(RepairerService repairerService) {
+    public RepairerController(RepairerService repairerService, RequestService requestService) {
         this.repairerService = repairerService;
+        this.requestService = requestService;
     }
 
 
     @GetMapping("/{id}")
-    public RepairerDto selecteRepairerById(@PathVariable("id") Long id){
+    public RepairerDto selectRepairerById(@PathVariable("id") Long id) {
         return repairerService.getRepairerById(id);
     }
 }

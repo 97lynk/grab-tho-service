@@ -12,8 +12,10 @@ public class OAuth2ResourceServerConfigJwt extends ResourceServerConfigurerAdapt
     @Override
     public void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/api**", "/oauth/authorize**")
-                .permitAll();
+                .antMatchers("/oauth/authorize**", "/requests/description-images/**")
+                .permitAll()
+                .and()
+                .authorizeRequests().anyRequest().authenticated();
     }
 
 }
