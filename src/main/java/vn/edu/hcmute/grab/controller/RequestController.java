@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.constant.RoleName;
+import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
 import vn.edu.hcmute.grab.dto.AddRequestDto;
 import vn.edu.hcmute.grab.dto.RequestDto;
 import vn.edu.hcmute.grab.service.FileStorageService;
@@ -152,7 +153,7 @@ public class RequestController {
 
     @GetMapping("/accepted")
     @PreAuthorize("hasAnyRole('REPAIRER')")
-    public RequestDto getAcceptedRequest(Authentication auth) {
+    public AcceptedRequestDto getAcceptedRequest(Authentication auth) {
         return requestService.getAcceptedRequestOfRepairer(auth.getName());
     }
 

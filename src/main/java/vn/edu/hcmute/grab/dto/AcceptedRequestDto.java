@@ -34,6 +34,10 @@ public class AcceptedRequestDto {
 
     private Long userId;
 
+    private String userFullName;
+
+    private String userAvatar;
+
     private int point;
 
     private String repairerName;

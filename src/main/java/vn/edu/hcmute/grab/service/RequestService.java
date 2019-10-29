@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
+import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
 import vn.edu.hcmute.grab.dto.AddRequestDto;
 import vn.edu.hcmute.grab.dto.RequestDto;
 import vn.edu.hcmute.grab.entity.Repairer;
@@ -119,9 +120,9 @@ public class RequestService {
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }
 
-    public RequestDto getAcceptedRequestOfRepairer(String usernameOfRepairer) {
-        Request request = requestRepository.findByRepairerUserUsername(usernameOfRepairer)
-                .orElseThrow(() -> new ObjectNotFoundException(usernameOfRepairer, Request.class.getSimpleName()));
-        return REQUEST_MAPPER.entityToDto(request);
+    public AcceptedRequestDto getAcceptedRequestOfRepairer(String usernameOfRepairer) {
+        Request request = requestRepository.findByRepairerUserUsernameAndStatusIn(usernameOfRepairer, Arrays.asList(RequestStatus.ACCEPTED))
+                .orElse(null);
+        return REQUEST_MAPPER.entityToAcceptedDto(request);
     }
 }

@@ -36,4 +36,6 @@ public class RecentRequestDto {
 
     private String userFullName;
 
+    private String userAvatar;
+
 }
