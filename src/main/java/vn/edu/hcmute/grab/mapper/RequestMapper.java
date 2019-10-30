@@ -12,11 +12,9 @@ public interface RequestMapper {
 
     RequestMapper REQUEST_MAPPER =  Mappers.getMapper(RequestMapper.class);
 
-    @Mappings({
-            @Mapping(source = "user.id", target = "userId"),
-            @Mapping(source = "repairer.id", target = "repairerId"),
-            @Mapping(source = "user.fullName", target = "userFullName")
-    })
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.fullName", target = "userFullName")
+    @Mapping(source = "user.avatar", target = "userAvatar")
     RequestDto entityToDto(Request request);
 
     @Mapping(source = "user.id", target = "userId")
@@ -27,6 +25,7 @@ public interface RequestMapper {
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.fullName", target = "userFullName")
     @Mapping(source = "user.avatar", target = "userAvatar")
+    @Mapping(source = "repairer.user.fullName", target = "repairerName")
     AcceptedRequestDto entityToAcceptedDto(Request request);
 
     @Mappings({

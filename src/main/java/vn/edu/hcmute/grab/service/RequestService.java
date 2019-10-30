@@ -21,6 +21,7 @@ import vn.edu.hcmute.grab.repository.RequestRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
 
@@ -120,9 +121,9 @@ public class RequestService {
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }
 
-    public AcceptedRequestDto getAcceptedRequestOfRepairer(String usernameOfRepairer) {
-        Request request = requestRepository.findByRepairerUserUsernameAndStatusIn(usernameOfRepairer, Arrays.asList(RequestStatus.ACCEPTED))
-                .orElse(null);
-        return REQUEST_MAPPER.entityToAcceptedDto(request);
+    public List<AcceptedRequestDto> getAcceptedRequestOfRepairer(String usernameOfRepairer) {
+        return requestRepository.findByRepairerUserUsernameAndStatusIn(usernameOfRepairer, Arrays.asList(RequestStatus.ACCEPTED))
+                .stream().map(REQUEST_MAPPER::entityToAcceptedDto)
+                .collect(Collectors.toList());
     }
 }

@@ -45,5 +45,7 @@ public class RequestDto {
 
     private String userFullName;
 
+    private String userAvatar;
+
     private Long repairerId;
 }

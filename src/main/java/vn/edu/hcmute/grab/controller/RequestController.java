@@ -153,7 +153,7 @@ public class RequestController {
 
     @GetMapping("/accepted")
     @PreAuthorize("hasAnyRole('REPAIRER')")
-    public AcceptedRequestDto getAcceptedRequest(Authentication auth) {
+    public List<AcceptedRequestDto> getAcceptedRequest(Authentication auth) {
         return requestService.getAcceptedRequestOfRepairer(auth.getName());
     }
 
