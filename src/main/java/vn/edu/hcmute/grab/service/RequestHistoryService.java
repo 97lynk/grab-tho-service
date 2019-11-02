@@ -4,6 +4,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.ActionStatus;
+import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.HistoryDto;
 import vn.edu.hcmute.grab.dto.JoinedRepairerDto;
 import vn.edu.hcmute.grab.entity.Repairer;
@@ -60,18 +61,47 @@ public class RequestHistoryService {
         Repairer repairer = repairerRepository.findByUserId(historyDto.getRepairerId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRepairerId(), Repairer.class.getSimpleName()));
 
+        if (historyDto.getAction() == ActionStatus.QUOTE) {
+            return quoteRequest(historyDto, request, repairer);
+        } else {
+            return receiveRequest(historyDto, request, repairer);
+        }
+    }
+
+    public RequestHistory quoteRequest(HistoryDto historyDto, Request request, Repairer repairer) {
+
         RequestHistory history = new RequestHistory();
         history.setCreateAt(LocalDateTime.now());
-        history.setPoint(0l);
-        if (historyDto.getAction() == ActionStatus.QUOTE)
-            history.setPoint(historyDto.getPoint());
-        history.setStatus(historyDto.getAction());
+        history.setPoint(historyDto.getPoint());
+        history.setStatus(ActionStatus.QUOTE);
         history.setRepairer(repairer);
         history.setRequest(request);
 
         request.setNoQuote(request.getNoQuote() + 1);
-        requestRepository.save(request);
+        // update status for request
+        if (request.getStatus() == RequestStatus.POSTED || request.getStatus() == RequestStatus.RECEIVED) {
+            request.setStatus(RequestStatus.QUOTED);
+        }
 
+        requestRepository.save(request);
+        return requestHistoryRepository.save(history);
+    }
+
+    public RequestHistory receiveRequest(HistoryDto historyDto, Request request, Repairer repairer) {
+        RequestHistory history = new RequestHistory();
+        history.setCreateAt(LocalDateTime.now());
+        history.setPoint(historyDto.getPoint());
+        history.setStatus(ActionStatus.RECEIVE);
+        history.setRepairer(repairer);
+        history.setRequest(request);
+
+        request.setNoReceiver(request.getNoReceiver() + 1);
+        // update status for request
+        if (request.getStatus() == RequestStatus.POSTED) {
+            request.setStatus(RequestStatus.RECEIVED);
+        }
+
+        requestRepository.save(request);
         return requestHistoryRepository.save(history);
     }
 

@@ -29,6 +29,6 @@ public class RequestHistory {
     private Request request;
 
     @ManyToOne
-    @JoinColumn(name = "repairer_id", nullable = false)
+    @JoinColumn(name = "repairer_id")
     private Repairer repairer;
 }

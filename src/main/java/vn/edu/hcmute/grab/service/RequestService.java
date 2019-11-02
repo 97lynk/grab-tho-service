@@ -8,9 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
-import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
-import vn.edu.hcmute.grab.dto.AddRequestDto;
-import vn.edu.hcmute.grab.dto.RequestDto;
+import vn.edu.hcmute.grab.dto.*;
 import vn.edu.hcmute.grab.entity.Repairer;
 import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.entity.RequestHistory;
@@ -125,5 +123,21 @@ public class RequestService {
         return requestRepository.findByRepairerUserUsernameAndStatusIn(usernameOfRepairer, Arrays.asList(RequestStatus.ACCEPTED))
                 .stream().map(REQUEST_MAPPER::entityToAcceptedDto)
                 .collect(Collectors.toList());
+    }
+
+    public void receiveRequest(Long requestId, String repairerUsername) {
+        Repairer repairer = repairerRepository.findByUserUsername(repairerUsername)
+                .orElseThrow(() -> new ObjectNotFoundException(repairerUsername, Repairer.class.getSimpleName()));
+
+        boolean alreadyReceived = requestHistoryService.getRequestHistory(Arrays.asList(requestId), repairer.getId()).stream()
+                .anyMatch(rh -> rh.getStatus() == ActionStatus.RECEIVE);
+
+        if (alreadyReceived) return;
+
+        HistoryDto history = new HistoryDto();
+        history.setAction(ActionStatus.RECEIVE);
+        history.setRequestId(requestId);
+        history.setRepairerId(repairer.getUser().getId());
+        requestHistoryService.addRequestHistory(history);
     }
 }
