@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class AuhController {
 
 
@@ -54,6 +56,8 @@ public class AuhController {
     @PostMapping("/login/{providerId}")
     public ResponseEntity receiveFacebookAccessToken(@PathVariable("providerId") String providerId,
                                                      @RequestParam(value = "token") String fbAccessToken, NativeWebRequest request) {
+        log.info("POST {} token {}", providerId, fbAccessToken);
+
         // check valid fb token
         String url = UriComponentsBuilder.fromUriString("https://graph.facebook.com/v2.11/debug_token")
                 .queryParam("access_token", fbAccessToken)
@@ -73,7 +77,7 @@ public class AuhController {
         if (userIds.size() == 0) {
             ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection);
             new HttpSessionSessionStrategy().setAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
-           facebookConnectionSignup.execute(connection);
+            facebookConnectionSignup.execute(connection);
             return receiveFacebookAccessToken(providerId, fbAccessToken, request);
         } else if (userIds.size() == 1) {
             usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);

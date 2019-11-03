@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import static vn.edu.hcmute.grab.mapper.JoinedRepairerMapper.JOINED_REPAIRER_MAP
 import static vn.edu.hcmute.grab.mapper.RequestHistoryMapper.REQUEST_HISTORY_MAPPER;
 
 @RestController
+@Slf4j
 public class RequestHistoryController {
 
     private final RequestHistoryService requestHistoryService;
@@ -33,13 +35,15 @@ public class RequestHistoryController {
     public List<JoinedRepairerDto> getAllRepairersReceivedRequest(
             @PathVariable("id") Long requestId,
             @RequestParam(value = "actions", defaultValue = "") List<ActionStatus> actions) {
-
+        log.info("GET repairers of request#{} with actions={}", requestId, actions);
         return requestHistoryService.getRepairerJoinedRequest(requestId, actions);
     }
 
     @GetMapping("/requests/{requestId}/histories/repairers/{repairerId}")
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     public ResponseEntity<?> getRepairersReceivedRequest(@PathVariable("requestId") Long requestId, @PathVariable("repairerId") Long repairerId) {
+
+        log.info("GET repairer#{} and histories in request#{}", repairerId);
 
         List<RequestHistory> requestHistory = requestHistoryService.getRequestHistory(Arrays.asList(requestId), repairerId);
 
@@ -58,6 +62,7 @@ public class RequestHistoryController {
     @PostMapping("/histories")
     @PreAuthorize("hasAnyRole('REPAIRER')")
     public RequestHistoryDto quoteOrReceiveRequest(@RequestBody HistoryDto historyDto) {
+        log.info("{} request#{}", historyDto.getAction(), historyDto.getRequestId());
         return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.addRequestHistory(historyDto));
     }
 
@@ -67,6 +72,7 @@ public class RequestHistoryController {
             @RequestParam(value = "requestId", required = false) List<Long> requestIds,
             Authentication auth) {
 
+        log.info("GET all history of request#{}", requestIds);
         return requestHistoryService.getRequestHistory(requestIds, auth.getName())
                 .stream().map(REQUEST_HISTORY_MAPPER::entityToDto)
                 .collect(Collectors.toList());

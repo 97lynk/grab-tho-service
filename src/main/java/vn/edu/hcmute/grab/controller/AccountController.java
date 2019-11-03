@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import static vn.edu.hcmute.grab.mapper.UserMapper.USER_MAPPER;
 
 @RestController
 @RequestMapping("/accounts")
+@Slf4j
 public class AccountController {
 
     private final UserService userService;
@@ -23,6 +25,7 @@ public class AccountController {
 
     @RequestMapping("/me")
     public UserDto getMyInfo(Authentication auth) {
+        log.info("GET profile {}", auth.getName());
         User user = userService.selectUserByUsername(auth.getName());
         return USER_MAPPER.entityToDTOWithRoles(user);
     }

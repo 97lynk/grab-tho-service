@@ -12,8 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +20,6 @@ import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
 import vn.edu.hcmute.grab.dto.AddRequestDto;
 import vn.edu.hcmute.grab.dto.RequestDto;
-import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.service.FileStorageService;
 import vn.edu.hcmute.grab.service.RequestHistoryService;
 import vn.edu.hcmute.grab.service.RequestService;
@@ -61,7 +58,7 @@ public class RequestController {
     public Page<?> getAllRequestOfUser(@PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable,
                                        @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,
                                        Authentication auth) {
-        log.info("Get a page of request, user {}, filter status={}", auth.getName(), statuses);
+        log.info("GET a page of request, user {}, filter status={}", auth.getName(), statuses);
 
         if (isCustomer(auth)) {
             if (statuses.isEmpty())
@@ -83,7 +80,7 @@ public class RequestController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public RequestDto getRequestById(@PathVariable("id") Long id, Authentication auth) {
-        log.info("Get a request by id " + id);
+        log.info("GET request#{}", id);
         if (isCustomer(auth))
             return requestService.getRequest(id, auth.getName());
         else {
@@ -102,7 +99,7 @@ public class RequestController {
     @PostMapping
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     public RequestDto newRequest(@RequestBody AddRequestDto requestDto, Authentication auth) {
-        log.info("Add new request, user " + auth.getName());
+        log.info("POST new request, user=#{}", auth.getName());
         return requestService.addNewRequest(requestDto, auth.getName());
     }
 
@@ -115,6 +112,7 @@ public class RequestController {
     @PostMapping("/description-images")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public ResponseEntity<?> uploadFile(@RequestParam(value = "images", defaultValue = "[]") List<MultipartFile> files) {
+        log.info("UPLOAD {} images", files.size());
         List<String> urlImages = files.stream()
                 .map(fileStorageService::storeFileImage)
                 .collect(Collectors.toList());
@@ -154,12 +152,14 @@ public class RequestController {
     public RequestDto acceptRepairer(@PathVariable("id") Long requestId,
                                      @RequestParam("repairer_id") Long repairerId,
                                      OAuth2Authentication auth) {
+        log.info("ACCEPT {} repairer#{} for request#{}", auth.getName(), repairerId, requestId);
         return requestService.acceptRepairer(requestId, repairerId, auth.getName());
     }
 
     @GetMapping("/accepted")
     @PreAuthorize("hasAnyRole('REPAIRER')")
     public List<AcceptedRequestDto> getAcceptedRequest(Authentication auth) {
+        log.info("GET accepted request of repairer {}", auth.getName());
         return requestService.getAcceptedRequestOfRepairer(auth.getName());
     }
 
