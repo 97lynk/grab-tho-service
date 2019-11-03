@@ -14,6 +14,7 @@ import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.entity.RequestHistory;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.RepairerRepository;
+import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
@@ -34,13 +35,16 @@ public class RequestService {
 
     private final RequestHistoryService requestHistoryService;
 
+    private final RequestHistoryRepository requestHistoryRepository;
+
     private final UserService userService;
 
     @Autowired
-    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, UserService userService) {
+    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService) {
         this.requestRepository = requestRepository;
         this.repairerRepository = repairerRepository;
         this.requestHistoryService = requestHistoryService;
+        this.requestHistoryRepository = requestHistoryRepository;
         this.userService = userService;
     }
 
@@ -104,7 +108,7 @@ public class RequestService {
 
     public RequestDto acceptRepairer(Long requestId, Long repairerId, String username) {
 
-        RequestHistory requestHistory = requestHistoryService.getRequestHistory(requestId, repairerId, ActionStatus.QUOTE);
+        RequestHistory quoteRequestHistory = requestHistoryService.getRequestHistory(requestId, repairerId, ActionStatus.QUOTE);
 
         Request request = requestRepository.findByIdAndUserUsername(requestId, username)
                 .orElseThrow(() -> new ObjectNotFoundException(requestId, Request.class.getSimpleName()));
@@ -113,8 +117,16 @@ public class RequestService {
                 .orElseThrow(() -> new ObjectNotFoundException(repairerId, Repairer.class.getSimpleName()));
 
         request.setRepairer(repairer);
-        request.setPoint(requestHistory.getPoint());
+        request.setPoint(quoteRequestHistory.getPoint());
         request.setStatus(RequestStatus.ACCEPTED);
+
+        RequestHistory acceptRequestHistory = new RequestHistory();
+        acceptRequestHistory.setCreateAt(LocalDateTime.now());
+        acceptRequestHistory.setPoint(quoteRequestHistory.getPoint());
+        acceptRequestHistory.setRepairer(repairer);
+        acceptRequestHistory.setRequest(request);
+        acceptRequestHistory.setStatus(ActionStatus.ACCEPT);
+        requestHistoryRepository.save(acceptRequestHistory);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }

@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmute.grab.constant.ActionStatus;
+import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.HistoryDto;
 import vn.edu.hcmute.grab.dto.JoinedRepairerDto;
 import vn.edu.hcmute.grab.dto.RequestHistoryDto;
@@ -31,12 +32,13 @@ public class RequestHistoryController {
     }
 
     @GetMapping("/requests/{id}/histories/repairers")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public List<JoinedRepairerDto> getAllRepairersReceivedRequest(
             @PathVariable("id") Long requestId,
-            @RequestParam(value = "actions", defaultValue = "") List<ActionStatus> actions) {
+            @RequestParam(value = "actions", defaultValue = "") List<ActionStatus> actions,
+            Authentication auth) {
         log.info("GET repairers of request#{} with actions={}", requestId, actions);
-        return requestHistoryService.getRepairerJoinedRequest(requestId, actions);
+        return requestHistoryService.getRepairerJoinedRequest(requestId, actions, (isCustomer(auth) ? null: auth.getName()));
     }
 
     @GetMapping("/requests/{requestId}/histories/repairers/{repairerId}")
@@ -78,5 +80,9 @@ public class RequestHistoryController {
                 .collect(Collectors.toList());
     }
 
+    private boolean isCustomer(Authentication auth) {
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(RoleName.ROLE_CUSTOMER.name()));
+    }
 
 }

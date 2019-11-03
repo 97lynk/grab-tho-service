@@ -24,6 +24,7 @@ import vn.edu.hcmute.grab.service.FileStorageService;
 import vn.edu.hcmute.grab.service.RequestHistoryService;
 import vn.edu.hcmute.grab.service.RequestService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,10 +129,11 @@ public class RequestController {
      */
     @GetMapping("/description-images/{fileName}")
 //    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
-    public ResponseEntity<?> downloadFile(@PathVariable(value = "fileName") String fileName) {
+    public ResponseEntity<?> downloadFile(@PathVariable(value = "fileName") String fileName,
+                                          @RequestParam(name = "q", defaultValue = "1.0") float quality) throws IOException {
 
         // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileStorageService.restoreFileImage(fileName).toURI());
+        Resource resource = fileStorageService.loadFileAsResource(fileStorageService.restoreFileImage(fileName, quality).toURI());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)

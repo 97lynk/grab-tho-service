@@ -22,6 +22,7 @@ public class Request {
     @Column(length = 5000)
     private String textDescription;
 
+    @Column(columnDefinition = "LONGBLOB")
     private String[] imagesDescription;
 
     private String address;

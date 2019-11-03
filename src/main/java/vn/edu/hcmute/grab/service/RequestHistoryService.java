@@ -37,8 +37,13 @@ public class RequestHistoryService {
     }
 
 
-    public List<JoinedRepairerDto> getRepairerJoinedRequest(Long requestId, List<ActionStatus> actions) {
-        List<RequestHistory> requestHistories = requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(requestId, actions);
+    public List<JoinedRepairerDto> getRepairerJoinedRequest(Long requestId, List<ActionStatus> actions, String usernameRepairer) {
+        List<RequestHistory> requestHistories;
+        if (usernameRepairer == null)
+            requestHistories = requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(requestId, actions);
+        else
+            requestHistories = requestHistoryRepository.findAllByRequestIdAndStatusIsInAndRepairerUserUsernameOrderByCreateAtDesc(requestId, actions, usernameRepairer);
+
         return requestHistories.stream()
                 .map(JOINED_REPAIRER_MAPPER::entityToDtoWithRole)
                 .collect(Collectors.toList());
@@ -61,11 +66,14 @@ public class RequestHistoryService {
         Repairer repairer = repairerRepository.findByUserId(historyDto.getRepairerId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRepairerId(), Repairer.class.getSimpleName()));
 
-        if (historyDto.getAction() == ActionStatus.QUOTE) {
-            return quoteRequest(historyDto, request, repairer);
-        } else {
+        if (historyDto.getAction() == ActionStatus.RECEIVE) {
             return receiveRequest(historyDto, request, repairer);
+        } else if (historyDto.getAction() == ActionStatus.QUOTE) {
+            return quoteRequest(historyDto, request, repairer);
+        } else if (historyDto.getAction() == ActionStatus.COMPLETE) {
+            return closeRequest(historyDto, request, repairer);
         }
+        return null;
     }
 
     public RequestHistory quoteRequest(HistoryDto historyDto, Request request, Repairer repairer) {
@@ -101,6 +109,19 @@ public class RequestHistoryService {
             request.setStatus(RequestStatus.RECEIVED);
         }
 
+        requestRepository.save(request);
+        return requestHistoryRepository.save(history);
+    }
+
+    public RequestHistory closeRequest(HistoryDto historyDto, Request request, Repairer repairer) {
+        RequestHistory history = new RequestHistory();
+        history.setCreateAt(LocalDateTime.now());
+        history.setPoint(historyDto.getPoint());
+        history.setStatus(ActionStatus.COMPLETE);
+        history.setRepairer(repairer);
+        history.setRequest(request);
+
+        request.setStatus(RequestStatus.COMPLETED);
         requestRepository.save(request);
         return requestHistoryRepository.save(history);
     }

@@ -12,6 +12,9 @@ import vn.edu.hcmute.grab.exception.FileNotFoundException;
 import vn.edu.hcmute.grab.exception.FileNotSupportException;
 import vn.edu.hcmute.grab.exception.FileStorageException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -64,14 +67,64 @@ public class FileStorageService {
     }
 
 
-    public File restoreFileImage(String fileName) {
-        File file = this.fileInputStorageLocation.resolve(fileName).toFile();
+    public File restoreFileImage(String fileName, float quality) throws IOException {
+        String extFile = fileName.substring(fileName.indexOf('.'));
+        String id = fileName.replace(extFile, "");
+        String qualityName = String.valueOf(quality).replace(".", "");
 
-        if (file.isFile()) {
-            return file;
-        } else {
+        File originFile = this.fileInputStorageLocation.resolve(fileName).toFile();
+
+        if (!originFile.isFile()) {
             throw new FileNotFoundException(String.format("File not found %s", fileName));
         }
+
+        if (quality >= 1.0f) return originFile;
+
+        File qualityFile = this.fileInputStorageLocation.resolve(String.format("%s-%s.%s", id, qualityName, extFile)).toFile();
+        if (!qualityFile.isFile()) {
+            return compressOImage(originFile, quality, String.format("%s-%s.%s", id, qualityName, extFile));
+        }
+
+        return qualityFile;
+    }
+
+    public File compressOImage(File file, float quality, String qualityFileName) throws IOException {
+        BufferedImage image = ImageIO.read(file);
+        int IMG_HEIGHT = (int) (image.getHeight() * quality);
+        int IMG_WIDTH = (int) (image.getWidth() * quality);
+
+        BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, (image.getType() != 0) ? image.getType() : BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(image, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
+        g.dispose();
+
+        File output = new File(fileInputStorageLocation.toString() + File.separator + qualityFileName);
+        ImageIO.write(resizedImage, "png", output);
+
+        return output;
+
+//        BufferedImage image = ImageIO.read(file);
+//
+//        File output = new File(fileInputStorageLocation.toString() + File.separator + qualityFileName);
+//        OutputStream out = new FileOutputStream(output);
+//
+//        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+//        ImageOutputStream ios = ImageIO.createImageOutputStream(out);
+//        writer.setOutput(ios);
+//
+//        ImageWriteParam param = writer.getDefaultWriteParam();
+//        if (param.canWriteCompressed()) {
+//            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+//            param.setCompressionQuality(quality);
+//        }
+//
+//        writer.write(null, new IIOImage(image, null, null), param);
+//
+//        out.close();
+//        ios.close();
+//        writer.dispose();
+//
+//        return output;
     }
 
     private void storeMultipartFile(Path location, String fileName, MultipartFile file) throws IOException {
