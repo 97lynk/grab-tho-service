@@ -29,10 +29,10 @@ public interface RequestMapper {
     @Mapping(source = "repairer.user.fullName", target = "repairerName")
     AcceptedRequestDto entityToAcceptedDto(Request request);
 
-    @Mappings({
-//            @Mapping(source = "user.id", target = "userId"),
-            @Mapping(source = "repairer.user.fullName", target = "repairerName"),
-    })
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.fullName", target = "userFullName")
+    @Mapping(source = "user.avatar", target = "userAvatar")
+    @Mapping(source = "repairer.user.fullName", target = "repairerName")
     CompletedRequestDto entityToCompletedDto(Request request);
 
     Request dtoToEntity(RecentRequestDto recentRequestDto);

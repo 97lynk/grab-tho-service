@@ -44,4 +44,8 @@ public class CompletedRequestDto {
 
     private Long userId;
 
+    private String userFullName;
+
+    private String userAvatar;
+
 }

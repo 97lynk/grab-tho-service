@@ -25,7 +25,11 @@ public class RepairerController {
         this.requestService = requestService;
     }
 
-
+    /**
+     * get a repairer by id
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public RepairerDto selectRepairerById(@PathVariable("id") Long id) {
         log.info("GET repairer#{}", id);

@@ -31,6 +31,13 @@ public class RequestHistoryController {
         this.requestHistoryService = requestHistoryService;
     }
 
+    /**
+     * get list request history (list comment)
+     * @param requestId
+     * @param actions
+     * @param auth
+     * @return
+     */
     @GetMapping("/requests/{id}/histories/repairers")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public List<JoinedRepairerDto> getAllRepairersReceivedRequest(
@@ -61,9 +68,14 @@ public class RequestHistoryController {
         return ResponseEntity.ok(data);
     }
 
+    /**
+     * quoting, receiving, closing a request
+     * @param historyDto
+     * @return
+     */
     @PostMapping("/histories")
     @PreAuthorize("hasAnyRole('REPAIRER')")
-    public RequestHistoryDto quoteOrReceiveRequest(@RequestBody HistoryDto historyDto) {
+    public RequestHistoryDto quoteOrReceiveOrClosingRequest(@RequestBody HistoryDto historyDto) {
         log.info("{} request#{}", historyDto.getAction(), historyDto.getRequestId());
         return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.addRequestHistory(historyDto));
     }

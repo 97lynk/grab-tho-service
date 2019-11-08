@@ -39,6 +39,13 @@ public class RequestService {
 
     private final UserService userService;
 
+    private final List<RequestStatus> RECENT_STATUSES
+            = Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED);
+    private final List<RequestStatus> ACCEPTED_STATUSES
+            = Arrays.asList(RequestStatus.ACCEPTED, RequestStatus.WAITING);
+    private final List<RequestStatus> COMPLETED_STATUSES
+            = Arrays.asList(RequestStatus.COMPLETED, RequestStatus.FEEDBACK, RequestStatus.CLOSED);
+
     @Autowired
     public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService) {
         this.requestRepository = requestRepository;
@@ -54,12 +61,14 @@ public class RequestService {
                 .map(REQUEST_MAPPER::entityToRecentDto);
     }
 
-    public RequestDto getRequest(Long id, String username) {
+    private Request getRequestById(Long id, String username) {
         userService.selectUserByUsername(username);
-        Request request = requestRepository.findByIdAndUserUsername(id, username)
+        return requestRepository.findByIdAndUserUsername(id, username)
                 .orElseThrow(() -> new ObjectNotFoundException(id, Request.class.getSimpleName()));
+    }
 
-        return REQUEST_MAPPER.entityToDto(request);
+    public RequestDto getRequest(Long id, String username) {
+        return REQUEST_MAPPER.entityToDto(getRequestById(id, username));
     }
 
     public RequestDto getRequest(Long id) {
@@ -80,13 +89,22 @@ public class RequestService {
         return requestMappingByStatus(requests, statuses);
     }
 
+    public Page<?> getPagePrivateRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses, String usernameRepairer) {
+        if (!statuses.containsAll(COMPLETED_STATUSES)) {
+            return getPageRequestAndFilterByStatus(pageable, statuses);
+        }
+
+        Page<Request> requests = requestRepository.findAllByStatusInAndRepairer_UserUsername(pageable, statuses, usernameRepairer);
+        return requestMappingByStatus(requests, statuses);
+    }
+
     private Page<?> requestMappingByStatus(Page<Request> requests, List<RequestStatus> statuses) {
 
-        if (statuses.containsAll(Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED)))
+        if (statuses.containsAll(RECENT_STATUSES))
             return requests.map(REQUEST_MAPPER::entityToRecentDto);
-        else if (statuses.containsAll(Arrays.asList(RequestStatus.ACCEPTED, RequestStatus.WAITING)))
+        else if (statuses.containsAll(ACCEPTED_STATUSES))
             return requests.map(REQUEST_MAPPER::entityToAcceptedDto);
-        else if (statuses.containsAll(Arrays.asList(RequestStatus.COMPLETED, RequestStatus.FEEDBACK, RequestStatus.CLOSED)))
+        else if (statuses.containsAll(COMPLETED_STATUSES))
             return requests.map(REQUEST_MAPPER::entityToCompletedDto);
 
         return requests.map(REQUEST_MAPPER::entityToDto);
@@ -110,8 +128,7 @@ public class RequestService {
 
         RequestHistory quoteRequestHistory = requestHistoryService.getRequestHistory(requestId, repairerId, ActionStatus.QUOTE);
 
-        Request request = requestRepository.findByIdAndUserUsername(requestId, username)
-                .orElseThrow(() -> new ObjectNotFoundException(requestId, Request.class.getSimpleName()));
+        Request request = getRequestById(requestId, username);
 
         Repairer repairer = repairerRepository.findById(repairerId)
                 .orElseThrow(() -> new ObjectNotFoundException(repairerId, Repairer.class.getSimpleName()));
@@ -126,6 +143,25 @@ public class RequestService {
         acceptRequestHistory.setRepairer(repairer);
         acceptRequestHistory.setRequest(request);
         acceptRequestHistory.setStatus(ActionStatus.ACCEPT);
+        requestHistoryRepository.save(acceptRequestHistory);
+
+        return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
+    }
+
+    public RequestDto feedBack(Long requestId, String posterUsername, FeedBackDto feedBackDto) {
+
+        Request request = getRequestById(requestId, posterUsername);
+        request.setStatus(RequestStatus.FEEDBACK);
+        request.setComment(feedBackDto.getComment());
+        request.setRate(feedBackDto.getRate());
+        request.setFeedBack(true);
+
+        RequestHistory acceptRequestHistory = new RequestHistory();
+        acceptRequestHistory.setCreateAt(LocalDateTime.now());
+        acceptRequestHistory.setPoint(0l);
+        acceptRequestHistory.setRepairer(request.getRepairer());
+        acceptRequestHistory.setRequest(request);
+        acceptRequestHistory.setStatus(ActionStatus.FEEDBACK);
         requestHistoryRepository.save(acceptRequestHistory);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));

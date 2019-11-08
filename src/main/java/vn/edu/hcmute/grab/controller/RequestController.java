@@ -19,6 +19,7 @@ import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
 import vn.edu.hcmute.grab.dto.AddRequestDto;
+import vn.edu.hcmute.grab.dto.FeedBackDto;
 import vn.edu.hcmute.grab.dto.RequestDto;
 import vn.edu.hcmute.grab.service.FileStorageService;
 import vn.edu.hcmute.grab.service.RequestHistoryService;
@@ -40,7 +41,8 @@ public class RequestController {
     private final FileStorageService fileStorageService;
 
     @Autowired
-    public RequestController(RequestService requestService, RequestHistoryService requestHistoryService, FileStorageService fileStorageService) {
+    public RequestController(RequestService requestService, RequestHistoryService requestHistoryService,
+                             FileStorageService fileStorageService) {
         this.requestService = requestService;
         this.requestHistoryService = requestHistoryService;
         this.fileStorageService = fileStorageService;
@@ -67,7 +69,7 @@ public class RequestController {
             else
                 return filterRequest(pageable, statuses, auth);
         } else {
-            return requestService.getPageRequestAndFilterByStatus(pageable, statuses);
+            return requestService.getPagePrivateRequestAndFilterByStatus(pageable, statuses, auth.getName());
         }
     }
 
@@ -158,6 +160,21 @@ public class RequestController {
         return requestService.acceptRepairer(requestId, repairerId, auth.getName());
     }
 
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    public RequestDto feedBack(@PathVariable("id") Long requestId, @RequestBody FeedBackDto feedBack,
+                               OAuth2Authentication auth) {
+        log.info("FEEDBACK {} {} for request#{}", feedBack.getRate(), feedBack.getComment(), auth.getName());
+        return requestService.feedBack(requestId, auth.getName(), feedBack);
+    }
+
+
+    /**
+     * get accepted requests
+     *
+     * @param auth
+     * @return
+     */
     @GetMapping("/accepted")
     @PreAuthorize("hasAnyRole('REPAIRER')")
     public List<AcceptedRequestDto> getAcceptedRequest(Authentication auth) {
