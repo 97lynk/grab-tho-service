@@ -123,6 +123,10 @@ public class RequestHistoryService {
 
         request.setStatus(RequestStatus.COMPLETED);
         requestRepository.save(request);
+
+        repairer.setCompletedJob(repairer.getCompletedJob() + 1l);
+        repairerRepository.save(repairer);
+
         return requestHistoryRepository.save(history);
     }
 

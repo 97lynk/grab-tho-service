@@ -150,12 +150,23 @@ public class RequestService {
 
     public RequestDto feedBack(Long requestId, String posterUsername, FeedBackDto feedBackDto) {
 
+        // update status/comment/rating for request
         Request request = getRequestById(requestId, posterUsername);
         request.setStatus(RequestStatus.FEEDBACK);
         request.setComment(feedBackDto.getComment());
         request.setRate(feedBackDto.getRate());
         request.setFeedBack(true);
 
+        // update review/rate for repairer
+        Repairer repairer = request.getRepairer();
+        long oldReview = repairer.getReviews();
+        float oldRate = repairer.getRating();
+        double total = oldRate * oldReview + feedBackDto.getRate();
+        repairer.setRating((float) (total / (oldReview + 1)));
+        repairer.setReviews(oldReview + 1);
+        repairerRepository.save(repairer);
+
+        // save a new history
         RequestHistory acceptRequestHistory = new RequestHistory();
         acceptRequestHistory.setCreateAt(LocalDateTime.now());
         acceptRequestHistory.setPoint(0l);

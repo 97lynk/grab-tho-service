@@ -32,4 +32,10 @@ public class RepairerDto {
     private String avatar;
 
     private float rating = 0.0f;
+
+    private long reviews = 0;
+
+    private String major;
+
+    private long completedJob = 0l;
 }
