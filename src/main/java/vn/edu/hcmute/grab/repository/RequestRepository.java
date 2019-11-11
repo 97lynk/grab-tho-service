@@ -21,6 +21,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     Page<Request> findAllByStatusIn(Pageable pageable, List<RequestStatus> statuses);
 
-    Page<Request> findAllByStatusInAndRepairer_UserUsername(Pageable pageable, List<RequestStatus> statuses, String usernameRepairer);
+    Page<Request> findAllByStatusInAndRepairerId(Pageable pageable, List<RequestStatus> statuses, Long repairerId);
 
+    List<Request> findAllByRepairerId(Long repairerId);
 }

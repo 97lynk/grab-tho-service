@@ -69,7 +69,7 @@ public class RequestController {
             else
                 return filterRequest(pageable, statuses, auth);
         } else {
-            return requestService.getPagePrivateRequestAndFilterByStatus(pageable, statuses, auth.getName());
+            return requestService.getPageRequestAndFilterByStatus(pageable, statuses);
         }
     }
 

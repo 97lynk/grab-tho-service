@@ -63,7 +63,7 @@ public class RequestHistoryService {
         Request request = requestRepository.findById(historyDto.getRequestId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRequestId(), Request.class.getSimpleName()));
 
-        Repairer repairer = repairerRepository.findByUserId(historyDto.getRepairerId())
+        Repairer repairer = repairerRepository.findById(historyDto.getRepairerId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRepairerId(), Repairer.class.getSimpleName()));
 
         if (historyDto.getAction() == ActionStatus.RECEIVE) {

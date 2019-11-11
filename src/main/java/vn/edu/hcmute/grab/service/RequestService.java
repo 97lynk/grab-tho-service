@@ -89,12 +89,8 @@ public class RequestService {
         return requestMappingByStatus(requests, statuses);
     }
 
-    public Page<?> getPagePrivateRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses, String usernameRepairer) {
-        if (!statuses.containsAll(COMPLETED_STATUSES)) {
-            return getPageRequestAndFilterByStatus(pageable, statuses);
-        }
-
-        Page<Request> requests = requestRepository.findAllByStatusInAndRepairer_UserUsername(pageable, statuses, usernameRepairer);
+    public Page<?> getPagePrivateRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses, Long repairerId) {
+        Page<Request> requests = requestRepository.findAllByStatusInAndRepairerId(pageable, statuses, repairerId);
         return requestMappingByStatus(requests, statuses);
     }
 
@@ -196,7 +192,8 @@ public class RequestService {
         HistoryDto history = new HistoryDto();
         history.setAction(ActionStatus.RECEIVE);
         history.setRequestId(requestId);
-        history.setRepairerId(repairer.getUser().getId());
+        history.setRepairerId(repairer.getId());
         requestHistoryService.addRequestHistory(history);
     }
+
 }

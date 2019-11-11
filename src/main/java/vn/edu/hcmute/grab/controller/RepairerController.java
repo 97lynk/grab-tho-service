@@ -2,13 +2,20 @@ package vn.edu.hcmute.grab.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.RepairerDto;
 import vn.edu.hcmute.grab.service.RepairerService;
 import vn.edu.hcmute.grab.service.RequestService;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/repairers")
@@ -27,6 +34,7 @@ public class RepairerController {
 
     /**
      * get a repairer by id
+     *
      * @param id
      * @return
      */
@@ -35,4 +43,23 @@ public class RepairerController {
         log.info("GET repairer#{}", id);
         return repairerService.getRepairerById(id);
     }
+
+    @GetMapping("/{id}/rate")
+    public Map<String, Long> getStatisticRate(@PathVariable("id") Long id) {
+        log.info("GET rate of repairer#{}", id);
+        return repairerService.getRateRepairer(id);
+    }
+
+
+    @GetMapping("/{id}/requests")
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    public Page<?> getAllRequestOfUser(@PathVariable("id") Long id,
+                                       @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                       @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,
+                                       Authentication auth) {
+        log.info("GET a page request of repairer#{}, user {}, filter status={}", id, auth.getName(), statuses);
+
+        return requestService.getPagePrivateRequestAndFilterByStatus(pageable, statuses, id);
+    }
+
 }
