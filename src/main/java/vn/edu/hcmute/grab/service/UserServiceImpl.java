@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.UserDto;
@@ -24,13 +24,10 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -50,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
 //        if (!passwordEncoder.matches(oldPassword, user.getPassword()))
 //            throw new WrongPasswordException("Mật khẩu không đúng");
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
 
         return userRepository.save(user);
     }

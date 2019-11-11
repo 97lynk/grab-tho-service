@@ -2,7 +2,7 @@ package vn.edu.hcmute.grab.config.social.facebook;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,6 @@ public class FacebookConnectionSignup implements ConnectionSignUp {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private RoleRepository roleRepository;
 
     @Override
@@ -29,7 +26,7 @@ public class FacebookConnectionSignup implements ConnectionSignUp {
         log.info("Registering new account username: " + connection.getKey());
         final User user = User.builder()
                 .username(connection.getKey().getProviderUserId())
-                .password(passwordEncoder.encode("tuan"))
+                .password(new BCryptPasswordEncoder().encode("tuan"))
                 .fullName(connection.getDisplayName())
                 .roles(roleRepository.findAllByName(RoleName.ROLE_CUSTOMER))
                 .avatar(connection.getImageUrl())

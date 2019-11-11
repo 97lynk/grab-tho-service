@@ -1,15 +1,10 @@
 package vn.edu.hcmute.grab.config.social.facebook;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.NativeWebRequest;
-import vn.edu.hcmute.grab.entity.User;
-import vn.edu.hcmute.grab.repository.UserRepository;
-import vn.edu.hcmute.grab.service.AuthService;
 
 @Service
 @Slf4j
