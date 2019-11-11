@@ -2,7 +2,6 @@ package vn.edu.hcmute.grab.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 import vn.edu.hcmute.grab.dto.*;
 import vn.edu.hcmute.grab.entity.Request;

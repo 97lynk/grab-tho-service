@@ -4,12 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import vn.edu.hcmute.grab.dto.RepairerDto;
-import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Repairer;
-import vn.edu.hcmute.grab.entity.Role;
-import vn.edu.hcmute.grab.entity.User;
-
-import java.util.stream.Collectors;
 
 @Mapper
 public interface RepairerMapper {

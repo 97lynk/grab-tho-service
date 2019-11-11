@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.edu.hcmute.grab.constant.ActionStatus;
-import vn.edu.hcmute.grab.entity.Repairer;
-import vn.edu.hcmute.grab.entity.Request;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

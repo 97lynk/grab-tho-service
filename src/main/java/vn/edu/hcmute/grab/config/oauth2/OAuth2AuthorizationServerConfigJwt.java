@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -63,13 +63,10 @@ public class OAuth2AuthorizationServerConfigJwt extends AuthorizationServerConfi
     @Value("${oauth2.refresh-token-expire-in}")
     private int EXPIRE_REFRESH_TOKEN;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
         //client credential stored in database
-        clients.inMemory().withClient(CLIENT_ID).secret(passwordEncoder.encode(CLIENT_SECRET))
+        clients.inMemory().withClient(CLIENT_ID).secret(new BCryptPasswordEncoder().encode(CLIENT_SECRET))
                 .authorizedGrantTypes(GRANT_TYPES).scopes(SCOPES)
                 .accessTokenValiditySeconds(EXPIRE_ACCESS_TOKEN)
                 .refreshTokenValiditySeconds(EXPIRE_REFRESH_TOKEN)
