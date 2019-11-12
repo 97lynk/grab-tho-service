@@ -126,7 +126,7 @@ public class RequestService {
 
         Request request = getRequestById(requestId, username);
 
-        Repairer repairer = repairerRepository.findById(repairerId)
+        Repairer repairer = repairerRepository.findByUserId(repairerId)
                 .orElseThrow(() -> new ObjectNotFoundException(repairerId, Repairer.class.getSimpleName()));
 
         request.setRepairer(repairer);
@@ -192,7 +192,7 @@ public class RequestService {
         HistoryDto history = new HistoryDto();
         history.setAction(ActionStatus.RECEIVE);
         history.setRequestId(requestId);
-        history.setRepairerId(repairer.getId());
+        history.setRepairerId(repairer.getUser().getId());
         requestHistoryService.addRequestHistory(history);
     }
 

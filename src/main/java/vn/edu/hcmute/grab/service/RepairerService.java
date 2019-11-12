@@ -33,7 +33,7 @@ public class RepairerService {
 
     public RepairerDto getRepairerById(Long id) {
         return REPAIRER_MAPPER.entityToDTO(
-                repairerRepository.findById(id)
+                repairerRepository.findByUserId(id)
                         .orElseThrow(() -> new ObjectNotFoundException(id, Repairer.class.getSimpleName()))
         );
     }

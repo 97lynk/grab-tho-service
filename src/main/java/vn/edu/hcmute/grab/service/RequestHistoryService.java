@@ -50,7 +50,7 @@ public class RequestHistoryService {
     }
 
     public RequestHistory getRequestHistory(Long requestId, Long repairerId, ActionStatus status) {
-        return requestHistoryRepository.findByRequestIdAndRepairerIdAndStatus(requestId, repairerId, status).
+        return requestHistoryRepository.findByRequestIdAndRepairerUserIdAndStatus(requestId, repairerId, status).
                 orElseThrow(() -> new RuntimeException("Repairer didn't joined in request"));
     }
 
@@ -63,7 +63,7 @@ public class RequestHistoryService {
         Request request = requestRepository.findById(historyDto.getRequestId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRequestId(), Request.class.getSimpleName()));
 
-        Repairer repairer = repairerRepository.findById(historyDto.getRepairerId())
+        Repairer repairer = repairerRepository.findByUserId(historyDto.getRepairerId())
                 .orElseThrow(() -> new ObjectNotFoundException(historyDto.getRepairerId(), Repairer.class.getSimpleName()));
 
         if (historyDto.getAction() == ActionStatus.RECEIVE) {

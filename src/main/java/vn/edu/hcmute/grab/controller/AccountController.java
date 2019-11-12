@@ -32,9 +32,9 @@ public class AccountController {
     public UserDto getMyInfo(Authentication auth) {
         log.info("GET profile {}", auth.getName());
         User user = userService.selectUserByUsername(auth.getName());
-        repairerRepository.findByUserUsername(auth.getName()).ifPresent(r -> {
-            user.setId(r.getId());
-        });
+//        repairerRepository.findByUserUsername(auth.getName()).ifPresent(r -> {
+//            user.setId(r.getId());
+//        });
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 }

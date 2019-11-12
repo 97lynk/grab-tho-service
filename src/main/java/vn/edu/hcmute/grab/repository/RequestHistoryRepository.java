@@ -13,7 +13,7 @@ public interface RequestHistoryRepository extends JpaRepository<RequestHistory, 
 
     List<RequestHistory> findAllByRequestIdAndStatusIsInAndRepairerUserUsernameOrderByCreateAtDesc(Long requestId, List<ActionStatus> actions, String usernameRepairer);
 
-    Optional<RequestHistory> findByRequestIdAndRepairerIdAndStatus(Long requestId, Long repairerId, ActionStatus status);
+    Optional<RequestHistory> findByRequestIdAndRepairerUserIdAndStatus(Long requestId, Long repairerId, ActionStatus status);
 
     List<RequestHistory> findByRequestIdInAndRepairerId(List<Long> requestIds, Long repairerId);
 }
