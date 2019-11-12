@@ -2,7 +2,7 @@
 # DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
 spring:
   datasource:
-    url: jdbc:mysql://mysql_db:3306/grab_tho_db?useSSL=false&characterEncoding=utf8&createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql_db:3306/grab_tho_db?useSSL=false&characterEncoding=utf8
     username: root
     password: ZmWSZYNgdx
 #  initialization-mode: always
@@ -50,3 +50,11 @@ spring.social.facebook.appId: 548596522582041
 spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
+
+server:
+  ssl:
+    key-store-type: JKS
+    key-store: classpath:${key.file-name}
+    key-password: ${key.alias-password}
+    key-store-password: ${key.file-password}
+    key-alias: ${key.alias}

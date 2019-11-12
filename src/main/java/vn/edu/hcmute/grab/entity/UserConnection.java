@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @IdClass(UserConnection.ProjectId.class)
-@Table(name = "USERCONNECTION", uniqueConstraints = {
+@Table(name = "UserConnection", uniqueConstraints = {
         @UniqueConstraint(name = "UserConnectionRank", columnNames = { "userId", "providerId", "rank" }),
         @UniqueConstraint(name = "providerUser", columnNames = { "providerId", "providerUserId" }) })
 public class UserConnection {
