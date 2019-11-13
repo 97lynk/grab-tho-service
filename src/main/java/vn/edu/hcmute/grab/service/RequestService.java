@@ -18,8 +18,13 @@ import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
@@ -46,6 +51,8 @@ public class RequestService {
     private final List<RequestStatus> COMPLETED_STATUSES
             = Arrays.asList(RequestStatus.COMPLETED, RequestStatus.FEEDBACK, RequestStatus.CLOSED);
 
+    private final List<RequestStatus> STATUSES = new ArrayList<>();
+
     @Autowired
     public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService) {
         this.requestRepository = requestRepository;
@@ -53,6 +60,10 @@ public class RequestService {
         this.requestHistoryService = requestHistoryService;
         this.requestHistoryRepository = requestHistoryRepository;
         this.userService = userService;
+
+        this.STATUSES.addAll(RECENT_STATUSES);
+        this.STATUSES.addAll(ACCEPTED_STATUSES);
+        this.STATUSES.addAll(COMPLETED_STATUSES);
     }
 
     public Page<?> getPageRequestOfUser(Pageable pageable, String username) {
@@ -194,6 +205,19 @@ public class RequestService {
         history.setRequestId(requestId);
         history.setRepairerId(repairer.getUser().getId());
         requestHistoryService.addRequestHistory(history);
+    }
+
+    public List<RequestDto> getJoinedRequestByRepairer(List<ActionStatus> actions, String repairerUsername) {
+        List<RequestHistory> histories = requestHistoryRepository.findAllByRepairerUserUsernameAndStatusIsIn(repairerUsername, actions);
+        return histories.stream().map(RequestHistory::getRequest)
+                .filter(distinctByKey(Request::getId))
+                .map(REQUEST_MAPPER::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
 }

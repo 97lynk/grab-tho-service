@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.AcceptedRequestDto;
@@ -191,4 +192,11 @@ public class RequestController {
         return requestService.getPageRequestOfUserAndFilterByStatus(pageable, auth.getName(), statuses);
     }
 
+    @GetMapping("/private")
+    @PreAuthorize("hasAnyRole('REPAIRER')")
+    public List<RequestDto> getJoinedRequestByRepairer(Authentication auth,
+                                                       @RequestParam(value = "action", defaultValue = "") List<ActionStatus> actions) {
+        log.info("GET joined request by repairer {}", auth.getName());
+        return requestService.getJoinedRequestByRepairer(actions, auth.getName());
+    }
 }

@@ -16,4 +16,7 @@ public interface RequestHistoryRepository extends JpaRepository<RequestHistory, 
     Optional<RequestHistory> findByRequestIdAndRepairerUserIdAndStatus(Long requestId, Long repairerId, ActionStatus status);
 
     List<RequestHistory> findByRequestIdInAndRepairerId(List<Long> requestIds, Long repairerId);
+
+    List<RequestHistory> findAllByRepairerUserUsernameAndStatusIsIn(String username, List<ActionStatus> actions);
+
 }
