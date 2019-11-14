@@ -51,7 +51,6 @@ spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
 
-server.host: 'http://localhost:8080'
 server:
   ssl:
     key-store-type: JKS
