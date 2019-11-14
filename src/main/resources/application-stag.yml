@@ -51,6 +51,8 @@ spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
 
+server.host: 'https://grabtho.tk'
+
 server:
   ssl:
     key-store-type: JKS
