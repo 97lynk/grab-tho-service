@@ -50,3 +50,11 @@ spring.social.facebook.appId: 548596522582041
 spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
+
+server:
+  ssl:
+    key-store-type: JKS
+    key-store: classpath:grab-tho-ssl.jks
+    key-store-password: grabThoGrabtho
+    key-alias: 1
+    key-password: GrabGrabThoTho
