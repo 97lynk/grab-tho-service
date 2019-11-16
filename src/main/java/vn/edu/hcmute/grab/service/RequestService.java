@@ -17,11 +17,12 @@ import vn.edu.hcmute.grab.repository.RepairerRepository;
 import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,6 +45,8 @@ public class RequestService {
 
     private final UserService userService;
 
+    private final NotificationService notificationService;
+
     private final List<RequestStatus> RECENT_STATUSES
             = Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED);
     private final List<RequestStatus> ACCEPTED_STATUSES
@@ -54,12 +57,13 @@ public class RequestService {
     private final List<RequestStatus> STATUSES = new ArrayList<>();
 
     @Autowired
-    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService) {
+    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService, NotificationService notificationService) {
         this.requestRepository = requestRepository;
         this.repairerRepository = repairerRepository;
         this.requestHistoryService = requestHistoryService;
         this.requestHistoryRepository = requestHistoryRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
 
         this.STATUSES.addAll(RECENT_STATUSES);
         this.STATUSES.addAll(ACCEPTED_STATUSES);
@@ -128,6 +132,22 @@ public class RequestService {
         request.setPoint(0l);
 
         request = requestRepository.save(request);
+
+        // add notification
+        String message = String.format("%s vừa mới gửi yêu cầu mới", user.getFullName());
+        Date now = new Date();
+        NotificationDto notification = NotificationDto.builder()
+                .seen(false)
+                .sendAt(now.getTime())
+                .message(message)
+                .requestId(request.getId())
+                .action(ActionStatus.POST)
+                .thumbnail(user.getAvatar())
+                .build();
+
+        repairerRepository.findAll().stream()
+                .map(Repairer::getUser)
+                .forEach(u -> notificationService.saveNotification(u.getUsername(), notification));
         return REQUEST_MAPPER.entityToDto(request);
     }
 
@@ -151,6 +171,17 @@ public class RequestService {
         acceptRequestHistory.setRequest(request);
         acceptRequestHistory.setStatus(ActionStatus.ACCEPT);
         requestHistoryRepository.save(acceptRequestHistory);
+
+        // add notification
+        NotificationDto notification = NotificationDto.builder()
+                .seen(false)
+                .sendAt(new Date().getTime())
+                .message(String.format("%s đã chấp nhận báo giá %d của bạn", request.getUser().getFullName(), quoteRequestHistory.getPoint()))
+                .requestId(request.getId())
+                .action(ActionStatus.ACCEPT)
+                .thumbnail(request.getImagesDescription()[0])
+                .build();
+        notificationService.saveNotification(repairer.getUser().getUsername(), notification);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }
@@ -182,6 +213,17 @@ public class RequestService {
         acceptRequestHistory.setStatus(ActionStatus.FEEDBACK);
         requestHistoryRepository.save(acceptRequestHistory);
 
+        // add notification
+        NotificationDto notification = NotificationDto.builder()
+                .seen(false)
+                .sendAt(new Date().getTime())
+                .message(String.format("%s đã đánh giá yêu cầu", request.getUser().getFullName()))
+                .requestId(request.getId())
+                .action(ActionStatus.FEEDBACK)
+                .thumbnail(request.getImagesDescription()[0])
+                .build();
+        notificationService.saveNotification(repairer.getUser().getUsername(), notification);
+
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }
 
@@ -209,10 +251,27 @@ public class RequestService {
 
     public List<RequestDto> getJoinedRequestByRepairer(List<ActionStatus> actions, String repairerUsername) {
         List<RequestHistory> histories = requestHistoryRepository.findAllByRepairerUserUsernameAndStatusIsIn(repairerUsername, actions);
+        List<RequestStatus> statuses = actions.stream().map(this::convertActionToStatus).collect(Collectors.toList());
         return histories.stream().map(RequestHistory::getRequest)
                 .filter(distinctByKey(Request::getId))
+                .filter(r -> statuses.contains(r.getStatus()))
                 .map(REQUEST_MAPPER::entityToDto)
                 .collect(Collectors.toList());
+    }
+
+    private RequestStatus convertActionToStatus(ActionStatus action) {
+        switch (action) {
+            case FEEDBACK:
+                return RequestStatus.FEEDBACK;
+            case QUOTE:
+                return RequestStatus.QUOTED;
+            case ACCEPT:
+                return RequestStatus.ACCEPTED;
+            case COMPLETE:
+                return RequestStatus.COMPLETED;
+            default:
+                return RequestStatus.RECEIVED;
+        }
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

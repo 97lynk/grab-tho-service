@@ -88,6 +88,7 @@ public class RequestController {
         if (isCustomer(auth))
             return requestService.getRequest(id, auth.getName());
         else {
+            // TODO the repairer RECEIVE a request
             requestService.receiveRequest(id, auth.getName());
             return requestService.getRequest(id);
         }
@@ -103,6 +104,7 @@ public class RequestController {
     @PostMapping
     @PreAuthorize("hasAnyRole('CUSTOMER')")
     public RequestDto newRequest(@RequestBody AddRequestDto requestDto, Authentication auth) {
+        // TODO POST a new request
         log.info("POST new request, user=#{}", auth.getName());
         return requestService.addNewRequest(requestDto, auth.getName());
     }
@@ -158,6 +160,7 @@ public class RequestController {
                                      @RequestParam("repairer_id") Long repairerId,
                                      OAuth2Authentication auth) {
         log.info("ACCEPT {} repairer#{} for request#{}", auth.getName(), repairerId, requestId);
+        // TODO the poster ACCEPT repairer
         return requestService.acceptRepairer(requestId, repairerId, auth.getName());
     }
 
@@ -166,6 +169,7 @@ public class RequestController {
     public RequestDto feedBack(@PathVariable("id") Long requestId, @RequestBody FeedBackDto feedBack,
                                OAuth2Authentication auth) {
         log.info("FEEDBACK {} {} for request#{}", feedBack.getRate(), feedBack.getComment(), auth.getName());
+        // TODO the poster FEEDBACK
         return requestService.feedBack(requestId, auth.getName(), feedBack);
     }
 

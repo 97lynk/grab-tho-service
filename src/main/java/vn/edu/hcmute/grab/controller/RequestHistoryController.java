@@ -77,6 +77,7 @@ public class RequestHistoryController {
     @PreAuthorize("hasAnyRole('REPAIRER')")
     public RequestHistoryDto quoteOrReceiveOrClosingRequest(@RequestBody HistoryDto historyDto) {
         log.info("{} request#{}", historyDto.getAction(), historyDto.getRequestId());
+        // TODO the repairer QUOTE, CLOSE request
         return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.addRequestHistory(historyDto));
     }
 

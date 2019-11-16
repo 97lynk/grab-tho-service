@@ -7,6 +7,7 @@ import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.HistoryDto;
 import vn.edu.hcmute.grab.dto.JoinedRepairerDto;
+import vn.edu.hcmute.grab.dto.NotificationDto;
 import vn.edu.hcmute.grab.entity.Repairer;
 import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.entity.RequestHistory;
@@ -15,6 +16,7 @@ import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,11 +31,14 @@ public class RequestHistoryService {
 
     private final RequestHistoryRepository requestHistoryRepository;
 
+    private final NotificationService notificationService;
+
     @Autowired
-    public RequestHistoryService(RepairerRepository repairerRepository, RequestRepository requestRepository, RequestHistoryRepository requestHistoryRepository) {
+    public RequestHistoryService(RepairerRepository repairerRepository, RequestRepository requestRepository, RequestHistoryRepository requestHistoryRepository, NotificationService notificationService) {
         this.repairerRepository = repairerRepository;
         this.requestRepository = requestRepository;
         this.requestHistoryRepository = requestHistoryRepository;
+        this.notificationService = notificationService;
     }
 
 
@@ -91,7 +96,19 @@ public class RequestHistoryService {
             request.setStatus(RequestStatus.QUOTED);
         }
 
-        requestRepository.save(request);
+        request = requestRepository.save(request);
+
+        // add notification
+        NotificationDto notification = NotificationDto.builder()
+                .seen(false)
+                .sendAt(new Date().getTime())
+                .message(String.format("%s đã báo giá %d cho yêu cầu của bạn", repairer.getUser().getFullName(), historyDto.getPoint()))
+                .requestId(request.getId())
+                .action(ActionStatus.QUOTE)
+                .thumbnail(request.getImagesDescription()[0])
+                .build();
+        notificationService.saveNotification(request.getUser().getUsername(), notification);
+
         return requestHistoryRepository.save(history);
     }
 

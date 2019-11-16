@@ -50,11 +50,3 @@ spring.social.facebook.appId: 548596522582041
 spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
-
-server:
-  ssl:
-    key-store-type: JKS
-    key-store: classpath:kt3key.jks
-    key-store-password: hdkey@
-    key-alias: oauth2
-    key-password: hdkt3!
