@@ -14,6 +14,7 @@ import vn.edu.hcmute.grab.dto.NotificationDto;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @Slf4j
@@ -29,11 +30,8 @@ public class NotificationService {
 
         ///motel-242404-firebase-adminsdk-wzfw7-338fd655b6.json
 
-        FileInputStream serviceAccount = null;
         try {
-            serviceAccount = new FileInputStream(
-                    getClass().getClassLoader().getResource("motel-242404-firebase-adminsdk-wzfw7-338fd655b6.json").getFile()
-            );
+            InputStream  serviceAccount = getClass().getResourceAsStream("/motel-242404-firebase-adminsdk-wzfw7-338fd655b6.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -44,6 +42,7 @@ public class NotificationService {
 //            FirebaseAuth defaultAuth = FirebaseAuth.getInstance();
 //            FirebaseDatabase defaultDatabase = FirebaseDatabase.getInstance("fcmTokens");
 
+            log.info("notifications db " + environment.getActiveProfiles()[0] + "/notifications");
             notificationDb = FirebaseDatabase
                     .getInstance()
                     .getReference(environment.getActiveProfiles()[0] + "/notifications");
