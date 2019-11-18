@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.*;
@@ -17,11 +18,7 @@ import vn.edu.hcmute.grab.repository.RepairerRepository;
 import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -173,13 +170,16 @@ public class RequestService {
         requestHistoryRepository.save(acceptRequestHistory);
 
         // add notification
+        String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
+                .path(request.getImagesDescription()[0]).toUriString();
+
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
                 .message(String.format("%s đã chấp nhận báo giá %d của bạn", request.getUser().getFullName(), quoteRequestHistory.getPoint()))
                 .requestId(request.getId())
                 .action(ActionStatus.ACCEPT)
-                .thumbnail(request.getImagesDescription()[0])
+                .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(repairer.getUser().getUsername(), notification);
 
@@ -214,13 +214,15 @@ public class RequestService {
         requestHistoryRepository.save(acceptRequestHistory);
 
         // add notification
+        String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
+                .path(request.getImagesDescription()[0]).toUriString();
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
                 .message(String.format("%s đã đánh giá yêu cầu", request.getUser().getFullName()))
                 .requestId(request.getId())
                 .action(ActionStatus.FEEDBACK)
-                .thumbnail(request.getImagesDescription()[0])
+                .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(repairer.getUser().getUsername(), notification);
 

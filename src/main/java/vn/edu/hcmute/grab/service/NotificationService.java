@@ -6,21 +6,26 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.dto.NotificationDto;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 @Slf4j
 public class NotificationService {
 
-    DatabaseReference notificationDb;
+    private DatabaseReference notificationDb;
 
-    public NotificationService() {
+    private Environment environment;
+
+    @Autowired
+    public NotificationService(Environment environment) {
+        this.environment = environment;
 
         ///motel-242404-firebase-adminsdk-wzfw7-338fd655b6.json
 
@@ -41,7 +46,7 @@ public class NotificationService {
 
             notificationDb = FirebaseDatabase
                     .getInstance()
-                    .getReference("notifications");
+                    .getReference(environment.getActiveProfiles()[0] + "/notifications");
 
 
         } catch (FileNotFoundException e) {

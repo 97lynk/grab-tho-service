@@ -3,6 +3,7 @@ package vn.edu.hcmute.grab.service;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.HistoryDto;
@@ -99,13 +100,15 @@ public class RequestHistoryService {
         request = requestRepository.save(request);
 
         // add notification
+        String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
+                .path(request.getImagesDescription()[0]).toUriString();
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
                 .message(String.format("%s đã báo giá %d cho yêu cầu của bạn", repairer.getUser().getFullName(), historyDto.getPoint()))
                 .requestId(request.getId())
                 .action(ActionStatus.QUOTE)
-                .thumbnail(request.getImagesDescription()[0])
+                .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(request.getUser().getUsername(), notification);
 
