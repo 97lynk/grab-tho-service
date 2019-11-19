@@ -5,11 +5,13 @@ spring:
     url: jdbc:mysql://localhost:3306/demo_auth?useSSL=false&characterEncoding=utf8&createDatabaseIfNotExist=true
     username: root
     password: 123456
+
 #  initialization-mode: always
 # Hibernate
 # The SQL dialect makes Hibernate generate better SQL for the chosen database
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
 #Flyway
 #spring.flyway.baselineOnMigrate=true
 # Hibernate ddl auto (create, create-drop, validate, update)
@@ -50,3 +52,4 @@ spring.social.facebook.appId: 548596522582041
 spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
 
 file.upload-dir: /images
+#hibernate.ejb.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy

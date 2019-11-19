@@ -39,7 +39,7 @@ public class RepairerService {
     }
 
     public Map<String, Long> getRateRepairer(Long id) {
-        List<Request> requests = requestRepository.findAllByRepairerId(id).stream()
+        List<Request> requests = requestRepository.findAllByRepairerUserId(id).stream()
                 .filter(r -> r.getStatus() == RequestStatus.FEEDBACK)
                 .collect(Collectors.toList());
 

@@ -101,8 +101,8 @@ public class RequestService {
         return requestMappingByStatus(requests, statuses);
     }
 
-    public Page<?> getPagePrivateRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses, Long repairerId) {
-        Page<Request> requests = requestRepository.findAllByStatusInAndRepairerId(pageable, statuses, repairerId);
+    public Page<?> getPagePrivateRequestAndFilterByStatus(Pageable pageable, List<RequestStatus> statuses, Long userId) {
+        Page<Request> requests = requestRepository.findAllByStatusInAndRepairerUserId(pageable, statuses, userId);
         return requestMappingByStatus(requests, statuses);
     }
 
