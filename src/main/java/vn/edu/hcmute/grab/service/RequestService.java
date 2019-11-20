@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.service;
 
+import com.google.firebase.messaging.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +131,11 @@ public class RequestService {
 
         request = requestRepository.save(request);
 
+        List<String> receivers = repairerRepository.findAll().stream()
+                .map(Repairer::getUser)
+                .map(User::getUsername)
+                .collect(Collectors.toList());
+
         // add notification
         String message = String.format("%s vừa mới gửi yêu cầu mới", user.getFullName());
         Date now = new Date();
@@ -142,9 +148,16 @@ public class RequestService {
                 .thumbnail(user.getAvatar())
                 .build();
 
-        repairerRepository.findAll().stream()
-                .map(Repairer::getUser)
-                .forEach(u -> notificationService.saveNotification(u.getUsername(), notification));
+        receivers.forEach(u -> notificationService.saveNotification(u, notification));
+
+        // push notification
+        Notification noti = Notification.builder()
+                .setImage(user.getAvatar())
+                .setTitle("Yêu cầu mới")
+                .setBody(message)
+                .build();
+        notificationService.pushNotification(receivers, noti);
+
         return REQUEST_MAPPER.entityToDto(request);
     }
 
