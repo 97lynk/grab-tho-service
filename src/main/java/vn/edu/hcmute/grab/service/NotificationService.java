@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.dto.NotificationDto;
+import vn.edu.hcmute.grab.entity.Request;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class NotificationService {
         usersRef.push().setValueAsync(notification);
     }
 
-    void pushNotification(final List<String> receivers, Notification notification) {
+    void pushNotification(final List<String> receivers, Notification notification, Request request) {
         log.info("Send notification to {}", receivers);
         fcmTokensDb.addValueEventListener(new ValueEventListener() {
             @Override
@@ -80,6 +81,7 @@ public class NotificationService {
 
                 MulticastMessage message = MulticastMessage.builder()
                         .setNotification(notification)
+                        .putData("requestId", request.getId().toString())
                         .addAllTokens(tokens)
                         .build();
 

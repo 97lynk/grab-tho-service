@@ -156,7 +156,7 @@ public class RequestService {
                 .setTitle("Yêu cầu mới")
                 .setBody(message)
                 .build();
-        notificationService.pushNotification(receivers, noti);
+        notificationService.pushNotification(receivers, noti, request);
 
         return REQUEST_MAPPER.entityToDto(request);
     }
