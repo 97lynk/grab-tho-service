@@ -48,5 +48,5 @@ key:
 
 spring.social.facebook.appId: 548596522582041
 spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
-
+facebook.access-token: EAAQZABvpmxZCsBACmZBqZBkZBBIh1JaYX33iuTXASGr7N0TIJ0rfvqU1gjIZAVjTQZBurmuQLdZCtlZCUIemEpJwAghp5gZC2XveNc8BvGev16L80aVek0qCUtnGMOR33Tg5iirqlzEuMIZBbOtTbe1nMIl7GsYLHyiX9SgF45EQx2FIyKYEXiPMKZCh
 file.upload-dir: /images

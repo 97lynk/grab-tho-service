@@ -2,6 +2,7 @@ package vn.edu.hcmute.grab.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,7 +33,6 @@ import java.util.Map;
 @Slf4j
 public class AuhController {
 
-
     private final UserRepository userRepository;
 
     private final AuthService authService;
@@ -43,9 +43,13 @@ public class AuhController {
 
     private final FacebookConnectionSignup facebookConnectionSignup;
 
+    private final String access_token;
+
     @Autowired
     public AuhController(UserRepository userRepository, AuthService authService, UsersConnectionRepository usersConnectionRepository,
-                         ConnectionFactoryLocator connectionFactoryLocator, FacebookConnectionSignup facebookConnectionSignup) {
+                         ConnectionFactoryLocator connectionFactoryLocator, FacebookConnectionSignup facebookConnectionSignup,
+                         @Value("${facebook.access-token}") String access_token) {
+        this.access_token = access_token;
         this.userRepository = userRepository;
         this.authService = authService;
         this.usersConnectionRepository = usersConnectionRepository;
@@ -60,7 +64,7 @@ public class AuhController {
 
         // check valid fb token
         String url = UriComponentsBuilder.fromUriString("https://graph.facebook.com/v2.11/debug_token")
-                .queryParam("access_token", fbAccessToken)
+                .queryParam("access_token", access_token)
                 .queryParam("input_token", fbAccessToken).toUriString();
         ResponseEntity<Map> responseEntity = new RestTemplateBuilder().build().getForEntity(url, Map.class);
 
