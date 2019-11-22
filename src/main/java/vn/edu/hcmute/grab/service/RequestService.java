@@ -185,16 +185,24 @@ public class RequestService {
         // add notification
         String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
                 .path(request.getImagesDescription()[0]).toUriString();
-
+        String message = String.format("%s đã chấp nhận báo giá %d của bạn", request.getUser().getFullName(), quoteRequestHistory.getPoint());
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
-                .message(String.format("%s đã chấp nhận báo giá %d của bạn", request.getUser().getFullName(), quoteRequestHistory.getPoint()))
+                .message(message)
                 .requestId(request.getId())
                 .action(ActionStatus.ACCEPT)
                 .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(repairer.getUser().getUsername(), notification);
+
+        // push notification
+        Notification noti = Notification.builder()
+                .setImage(thumbnail)
+                .setTitle("Chấp nhận báo giá")
+                .setBody(message)
+                .build();
+        notificationService.pushNotification(Arrays.asList(repairer.getUser().getUsername()), noti, request);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }
@@ -229,15 +237,24 @@ public class RequestService {
         // add notification
         String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
                 .path(request.getImagesDescription()[0]).toUriString();
+        String message = String.format("%s đã đánh giá yêu cầu", request.getUser().getFullName());
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
-                .message(String.format("%s đã đánh giá yêu cầu", request.getUser().getFullName()))
+                .message(message)
                 .requestId(request.getId())
                 .action(ActionStatus.FEEDBACK)
                 .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(repairer.getUser().getUsername(), notification);
+
+        // push notification
+        Notification noti = Notification.builder()
+                .setImage(thumbnail)
+                .setTitle("Đánh giá")
+                .setBody(message)
+                .build();
+        notificationService.pushNotification(Arrays.asList(repairer.getUser().getUsername()), noti, request);
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }

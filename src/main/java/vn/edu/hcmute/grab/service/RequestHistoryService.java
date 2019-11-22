@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.service;
 
+import com.google.firebase.messaging.Notification;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,15 +104,24 @@ public class RequestHistoryService {
         // add notification
         String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
                 .path(request.getImagesDescription()[0]).toUriString();
+        String message = String.format("%s đã báo giá %d cho yêu cầu của bạn", repairer.getUser().getFullName(), historyDto.getPoint());
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
                 .sendAt(new Date().getTime())
-                .message(String.format("%s đã báo giá %d cho yêu cầu của bạn", repairer.getUser().getFullName(), historyDto.getPoint()))
+                .message(message)
                 .requestId(request.getId())
                 .action(ActionStatus.QUOTE)
                 .thumbnail(thumbnail)
                 .build();
         notificationService.saveNotification(request.getUser().getUsername(), notification);
+
+        // push notification
+        Notification noti = Notification.builder()
+                .setImage(thumbnail)
+                .setTitle("Thợ báo giá")
+                .setBody(message)
+                .build();
+        notificationService.pushNotification(Arrays.asList(request.getUser().getUsername()), noti, request);
 
         return requestHistoryRepository.save(history);
     }
