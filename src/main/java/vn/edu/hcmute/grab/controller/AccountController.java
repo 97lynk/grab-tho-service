@@ -2,9 +2,13 @@ package vn.edu.hcmute.grab.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.RepairerRepository;
@@ -32,9 +36,12 @@ public class AccountController {
     public UserDto getMyInfo(Authentication auth) {
         log.info("GET profile {}", auth.getName());
         User user = userService.selectUserByUsername(auth.getName());
-//        repairerRepository.findByUserUsername(auth.getName()).ifPresent(r -> {
-//            user.setId(r.getId());
-//        });
+        return USER_MAPPER.entityToDTOWithRoles(user);
+    }
+
+    @PostMapping
+    public UserDto registerAccount(@RequestBody RegisterDto registerDto) {
+        User user = userService.registration(registerDto);
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 }

@@ -6,14 +6,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.RoleName;
+import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.entity.User;
+import vn.edu.hcmute.grab.exception.UserException;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +28,13 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -91,26 +98,23 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-//    @Override
-//    public User registration(AccountDTO accountDto) {
-//        userRepository.findByEmail(accountDto.getEmail()).ifPresent((user) -> new UserException("Email đã tồn tại"));
-//
-//        User user = new User();
-//        if (accountDto.getFullName().trim().length() <= 0)
-//            user.setFullName(user.getEmail());
-//        else
-//            user.setFullName(accountDto.getFullName());
-//        user.setEmail(accountDto.getEmail());
-//        user.setAddress(accountDto.getAddress());
-//        user.setPhone(accountDto.getPhone());
-//        user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
-//        if (accountDto.getRole() != null && !accountDto.getRole().isEmpty()) {
-//            user.setRoles(accountDto.getRole().stream().map(this::selectRoleByName).collect(Collectors.toList()));
-//        } else {
-//            user.setRoles(Arrays.asList(selectRoleByName(RoleName.ROLE_USER)));
-//        }
-//        return userRepository.save(user);
-//    }
+    @Override
+    public User registration(RegisterDto registerDto) {
+        userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
+            throw new UserException("Email đã được đăng kí tài khoản khác");
+        });
+        userRepository.findByUsername(registerDto.getUsername()).ifPresent((user) -> {
+            throw new UserException("Tài khoản đã tồn tại");
+        });
+
+        User user = new User();
+        user.setEmail(registerDto.getEmail());
+        user.setUsername(registerDto.getUsername());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setRoles(Arrays.asList(selectRoleByName(RoleName.ROLE_CUSTOMER)));
+        user.setAvatar("http://tinygraphs.com/isogrids/tinygraphs?theme=frogideas&numcolors=2&size=220&fmt=svg");
+        return userRepository.save(user);
+    }
 
     @Override
     public void changeAvatar(Long id, byte[] fileBytes) {
