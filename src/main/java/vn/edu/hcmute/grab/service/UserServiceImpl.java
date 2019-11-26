@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.RoleName;
+import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
@@ -80,18 +81,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeProfile(UserDto userDTO) {
-        User user = selectUserById(userDTO.getId());
-        user.setPhone(userDTO.getPhone());
-        user.setFullName(userDTO.getFullName());
-        user.setAddress(userDTO.getAddress());
-//        user.setB64(userDTO.getB64());
-//        user.setFileType(userDTO.getFileType());
-
-        return userRepository.save(user);
-    }
-
-    @Override
     public User changeRole(Long id, List<RoleName> role) {
         User user = selectUserById(id);
         user.setRoles(role.stream().map(this::selectRoleByName).collect(Collectors.toList()));
@@ -123,5 +112,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public User updateProfile(Long id, ProfileDto profileDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, User.class.getSimpleName()));
+        user.setFullName(profileDto.getFullName());
+        user.setAddress(profileDto.getAddress());
+        user.setPhone(profileDto.getPhone());
+        user.setEmail(profileDto.getEmail());
+        return userRepository.save(user);
+    }
 
 }

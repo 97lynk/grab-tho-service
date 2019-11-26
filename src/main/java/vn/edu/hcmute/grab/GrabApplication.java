@@ -11,12 +11,21 @@ import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.service.FileStorageProperties;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })
 @Slf4j
 public class GrabApplication implements CommandLineRunner {
+
+    @PostConstruct
+    public void init(){
+        // Setting Spring Boot SetTimeZone
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(GrabApplication.class, args);

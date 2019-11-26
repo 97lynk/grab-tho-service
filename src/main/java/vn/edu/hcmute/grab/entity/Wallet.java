@@ -6,31 +6,24 @@ import vn.edu.hcmute.grab.constant.ActionStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
 @Data
 @NoArgsConstructor
-public class RequestHistory {
+public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private ActionStatus status;
+    private long xeng;
 
-    private long point;
-
-    private LocalDateTime createAt;
-
-    private String note;
-
-    @ManyToOne
-    @JoinColumn(name = "request_id", nullable = false)
-    private Request request;
-
-    @ManyToOne
-    @JoinColumn(name = "repairer_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "repairer_id", referencedColumnName = "id")
     private Repairer repairer;
+
+    @OneToMany(mappedBy="wallet", fetch = FetchType.LAZY)
+    private List<WalletHistory> walletHistories;
 }

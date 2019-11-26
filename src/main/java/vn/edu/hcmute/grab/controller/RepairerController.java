@@ -10,9 +10,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmute.grab.constant.RequestStatus;
+import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RepairerDto;
+import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.service.RepairerService;
 import vn.edu.hcmute.grab.service.RequestService;
+import vn.edu.hcmute.grab.service.UserServiceImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -26,10 +29,13 @@ public class RepairerController {
 
     private final RequestService requestService;
 
+    private final UserServiceImpl userService;
+
     @Autowired
-    public RepairerController(RepairerService repairerService, RequestService requestService) {
+    public RepairerController(RepairerService repairerService, RequestService requestService, UserServiceImpl userService) {
         this.repairerService = repairerService;
         this.requestService = requestService;
+        this.userService = userService;
     }
 
     /**
@@ -52,7 +58,7 @@ public class RepairerController {
 
 
     @GetMapping("/{id}/requests")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
     public Page<?> getAllRequestOfUser(@PathVariable("id") Long id,
                                        @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable,
                                        @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,

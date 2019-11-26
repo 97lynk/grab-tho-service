@@ -17,6 +17,7 @@ public interface RepairerMapper {
     @Mapping(source = "user.address", target = "address")
     @Mapping(source = "user.phone", target = "phone")
     @Mapping(source = "user.avatar", target = "avatar")
+    @Mapping(source = "wallet.xeng", target = "xeng")
     RepairerDto entityToDTO(Repairer repairer);
 
 }

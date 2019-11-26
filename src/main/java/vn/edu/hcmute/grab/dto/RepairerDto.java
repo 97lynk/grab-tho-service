@@ -30,4 +30,6 @@ public class RepairerDto {
     private String major;
 
     private long completedJob = 0l;
+
+    private long xeng;
 }

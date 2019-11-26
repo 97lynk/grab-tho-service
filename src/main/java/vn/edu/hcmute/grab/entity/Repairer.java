@@ -30,4 +30,7 @@ public class Repairer  {
 
     @OneToMany(mappedBy="repairer", fetch = FetchType.LAZY)
     private List<RequestHistory> requestHistories;
+
+    @OneToOne(mappedBy = "repairer")
+    private Wallet wallet;
 }

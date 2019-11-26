@@ -8,6 +8,7 @@ package vn.edu.hcmute.grab.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vn.edu.hcmute.grab.constant.RoleName;
+import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
@@ -33,7 +34,7 @@ public interface UserService {
 
     User selectUserById(Long id);
 
-    User changeProfile(UserDto userDTO);
+    User updateProfile(Long id, ProfileDto profileDto);
 
     User changeRole(Long id, List<RoleName> role);
 

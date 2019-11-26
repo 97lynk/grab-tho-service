@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.User;
@@ -23,19 +21,18 @@ public class AccountController {
 
     private final UserService userService;
 
-    private final RepairerRepository repairerRepository;
-
 
     @Autowired
-    public AccountController(UserService userService, RepairerRepository repairerRepository) {
+    public AccountController(UserService userService) {
         this.userService = userService;
-        this.repairerRepository = repairerRepository;
     }
 
     @RequestMapping("/me")
     public UserDto getMyInfo(Authentication auth) {
         log.info("GET profile {}", auth.getName());
         User user = userService.selectUserByUsername(auth.getName());
+        if(user.getFullName() == null || user.getFullName().trim().isEmpty())
+            user.setFullName(user.getUsername());
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 
@@ -44,4 +41,11 @@ public class AccountController {
         User user = userService.registration(registerDto);
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
+
+    @PutMapping("/{id}")
+    public UserDto updateProfile(@PathVariable("id") Long id, @RequestBody ProfileDto profileDto) {
+        log.info("PUT use#{} {}", id,  profileDto);
+        return USER_MAPPER.entityToDTOWithRoles(userService.updateProfile(id, profileDto));
+    }
+
 }
