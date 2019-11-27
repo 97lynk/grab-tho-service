@@ -44,8 +44,14 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public UserDto updateProfile(@PathVariable("id") Long id, @RequestBody ProfileDto profileDto) {
-        log.info("PUT use#{} {}", id,  profileDto);
+        log.info("PUT user#{} {}", id,  profileDto);
         return USER_MAPPER.entityToDTOWithRoles(userService.updateProfile(id, profileDto));
+    }
+
+    @PutMapping("/{id}/avatar")
+    public UserDto updateAvatar(@PathVariable("id") Long id, @RequestBody String avatarUrl) {
+        log.info("PUT user#{} {}", id,  avatarUrl);
+        return USER_MAPPER.entityToDTOWithRoles(userService.updateAvatar(id, avatarUrl));
     }
 
 }

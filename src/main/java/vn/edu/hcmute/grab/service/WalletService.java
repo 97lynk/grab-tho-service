@@ -33,7 +33,7 @@ public class WalletService {
         Repairer repairer = repairerRepository.findByUserId(repairerId)
                 .orElseThrow(() -> new ObjectNotFoundException(repairerId, Repairer.class.getSimpleName()));
 
-        return walletHistoryRepository.findAllByWalletId(repairer.getWallet().getId());
+        return walletHistoryRepository.findAllByWalletIdOrderByCreateAtDesc(repairer.getWallet().getId());
     }
 
     public WalletHistory transaction(WalletHistory history, Wallet wallet) {

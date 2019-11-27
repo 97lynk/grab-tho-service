@@ -113,6 +113,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateAvatar(Long id, String avatarUrl) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, User.class.getSimpleName()));
+        user.setAvatar(avatarUrl);
+        return userRepository.save(user);
+    }
+
+    @Override
     public User updateProfile(Long id, ProfileDto profileDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, User.class.getSimpleName()));
         user.setFullName(profileDto.getFullName());

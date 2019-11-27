@@ -42,4 +42,5 @@ public interface UserService {
 
     void changeAvatar(Long id, byte[] fileBytes);
 
+    User updateAvatar(Long id, String avatarUrl);
 }
