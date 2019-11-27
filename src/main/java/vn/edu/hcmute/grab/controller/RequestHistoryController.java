@@ -10,6 +10,7 @@ import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.HistoryDto;
 import vn.edu.hcmute.grab.dto.JoinedRepairerDto;
+import vn.edu.hcmute.grab.dto.RequestDto;
 import vn.edu.hcmute.grab.dto.RequestHistoryDto;
 import vn.edu.hcmute.grab.entity.RequestHistory;
 import vn.edu.hcmute.grab.service.RequestHistoryService;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static vn.edu.hcmute.grab.mapper.JoinedRepairerMapper.JOINED_REPAIRER_MAPPER;
 import static vn.edu.hcmute.grab.mapper.RequestHistoryMapper.REQUEST_HISTORY_MAPPER;
+import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
 
 @RestController
 @Slf4j
@@ -33,6 +35,7 @@ public class RequestHistoryController {
 
     /**
      * get list request history (list comment)
+     *
      * @param requestId
      * @param actions
      * @param auth
@@ -45,7 +48,7 @@ public class RequestHistoryController {
             @RequestParam(value = "actions", defaultValue = "") List<ActionStatus> actions,
             Authentication auth) {
         log.info("GET repairers of request#{} with actions={}", requestId, actions);
-        return requestHistoryService.getRepairerJoinedRequest(requestId, actions, (isCustomer(auth) ? null: auth.getName()));
+        return requestHistoryService.getRepairerJoinedRequest(requestId, actions, (isCustomer(auth) ? null : auth.getName()));
     }
 
     @GetMapping("/requests/{requestId}/histories/repairers/{repairerId}")
@@ -70,6 +73,7 @@ public class RequestHistoryController {
 
     /**
      * quoting, receiving, closing a request
+     *
      * @param historyDto
      * @return
      */
@@ -91,6 +95,13 @@ public class RequestHistoryController {
         return requestHistoryService.getRequestHistory(requestIds, auth.getName())
                 .stream().map(REQUEST_HISTORY_MAPPER::entityToDto)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/histories/feedback")
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    public List<RequestDto> getFeedBackUser(Authentication auth) {
+        log.info("GET feedback of user@{}", auth.getName());
+        return REQUEST_MAPPER.entityToDto(requestHistoryService.getFeedback(auth.getName()));
     }
 
     private boolean isCustomer(Authentication auth) {

@@ -3,6 +3,7 @@ package vn.edu.hcmute.grab.service;
 import com.google.firebase.messaging.Notification;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vn.edu.hcmute.grab.constant.ActionStatus;
@@ -176,6 +177,20 @@ public class RequestHistoryService {
         repairerRepository.save(repairer);
 
         return requestHistoryRepository.save(history);
+    }
+
+    public List<Request> getFeedback(String username) {
+        List<Request> requests = requestRepository.findAllByUserUsernameAndStatusIn(
+                PageRequest.of(0, 100), username, Arrays.asList(RequestStatus.FEEDBACK)).getContent();
+
+        requests.forEach(r -> {
+            List<RequestHistory> histories = requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(r.getId(), Arrays.asList(ActionStatus.FEEDBACK));
+            if(!histories.isEmpty()){
+                r.setCreateAt(histories.get(0).getCreateAt());
+            }
+        });
+
+        return requests;
     }
 
     public List<RequestHistory> getRequestHistory(List<Long> requestId, String username) {

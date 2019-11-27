@@ -24,8 +24,6 @@ public class RequestHistory {
 
     private LocalDateTime createAt;
 
-    private String note;
-
     @ManyToOne
     @JoinColumn(name = "request_id", nullable = false)
     private Request request;

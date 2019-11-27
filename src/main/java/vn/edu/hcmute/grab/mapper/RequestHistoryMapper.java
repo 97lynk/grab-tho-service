@@ -6,6 +6,8 @@ import org.mapstruct.factory.Mappers;
 import vn.edu.hcmute.grab.dto.RequestHistoryDto;
 import vn.edu.hcmute.grab.entity.RequestHistory;
 
+import java.util.List;
+
 @Mapper
 public interface RequestHistoryMapper {
 
@@ -14,5 +16,7 @@ public interface RequestHistoryMapper {
     @Mapping(source = "repairer.id", target = "repairerId")
     @Mapping(source = "request.id", target = "requestId")
     RequestHistoryDto entityToDto(RequestHistory requestHistory);
+
+    List<RequestHistoryDto> entityToDto(List<RequestHistory> histories);
 
 }

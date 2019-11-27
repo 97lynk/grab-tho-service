@@ -6,6 +6,8 @@ import org.mapstruct.factory.Mappers;
 import vn.edu.hcmute.grab.dto.*;
 import vn.edu.hcmute.grab.entity.Request;
 
+import java.util.List;
+
 @Mapper
 public interface RequestMapper {
 
@@ -37,4 +39,7 @@ public interface RequestMapper {
     Request dtoToEntity(RecentRequestDto recentRequestDto);
 
     Request dtoToEntity(AddRequestDto requestDto);
+
+
+    List<RequestDto> entityToDto(List<Request> request);
 }
