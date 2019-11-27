@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +26,21 @@ public class WalletHistory {
 
     private LocalDateTime createAt;
 
+    @Enumerated(EnumType.STRING)
+    private WalletAction action;
+
+    private String note;
+
+    @Builder
+    public WalletHistory(long xeng, Wallet wallet, LocalDateTime createAt, WalletAction action, String note) {
+        this.xeng = xeng;
+        this.wallet = wallet;
+        this.createAt = createAt;
+        this.action = action;
+        this.note = note;
+    }
+
     public enum  WalletAction {
-        QUOTE, RECHARGE;
+        QUOTE, RECHARGE, REFUND_QUOTE;
     }
 }

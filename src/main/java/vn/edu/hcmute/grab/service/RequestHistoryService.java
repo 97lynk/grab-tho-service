@@ -13,6 +13,7 @@ import vn.edu.hcmute.grab.dto.NotificationDto;
 import vn.edu.hcmute.grab.entity.Repairer;
 import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.entity.RequestHistory;
+import vn.edu.hcmute.grab.entity.WalletHistory;
 import vn.edu.hcmute.grab.repository.RepairerRepository;
 import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
@@ -34,13 +35,16 @@ public class RequestHistoryService {
 
     private final RequestHistoryRepository requestHistoryRepository;
 
+    private final WalletService walletService;
+
     private final NotificationService notificationService;
 
     @Autowired
-    public RequestHistoryService(RepairerRepository repairerRepository, RequestRepository requestRepository, RequestHistoryRepository requestHistoryRepository, NotificationService notificationService) {
+    public RequestHistoryService(RepairerRepository repairerRepository, RequestRepository requestRepository, RequestHistoryRepository requestHistoryRepository, WalletService walletService, NotificationService notificationService) {
         this.repairerRepository = repairerRepository;
         this.requestRepository = requestRepository;
         this.requestHistoryRepository = requestHistoryRepository;
+        this.walletService = walletService;
         this.notificationService = notificationService;
     }
 
@@ -115,6 +119,9 @@ public class RequestHistoryService {
                 .build();
         notificationService.saveNotification(request.getUser().getUsername(), notification);
 
+        // save request history
+        history = requestHistoryRepository.save(history);
+
         // push notification
         Notification noti = Notification.builder()
                 .setImage(thumbnail)
@@ -123,7 +130,17 @@ public class RequestHistoryService {
                 .build();
         notificationService.pushNotification(Arrays.asList(request.getUser().getUsername()), noti, request);
 
-        return requestHistoryRepository.save(history);
+        // add transaction
+        WalletHistory walletHistory = WalletHistory.builder()
+                .action(WalletHistory.WalletAction.QUOTE)
+                .createAt(LocalDateTime.now())
+                .xeng(-20l)
+                .note(history.getId().toString())
+                .wallet(repairer.getWallet())
+                .build();
+
+        walletService.transaction(walletHistory, repairer.getWallet());
+        return history;
     }
 
     public RequestHistory receiveRequest(HistoryDto historyDto, Request request, Repairer repairer) {

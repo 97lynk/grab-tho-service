@@ -11,10 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.*;
-import vn.edu.hcmute.grab.entity.Repairer;
-import vn.edu.hcmute.grab.entity.Request;
-import vn.edu.hcmute.grab.entity.RequestHistory;
-import vn.edu.hcmute.grab.entity.User;
+import vn.edu.hcmute.grab.entity.*;
 import vn.edu.hcmute.grab.repository.RepairerRepository;
 import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
@@ -45,6 +42,8 @@ public class RequestService {
 
     private final NotificationService notificationService;
 
+    private final WalletService walletService;
+
     private final List<RequestStatus> RECENT_STATUSES
             = Arrays.asList(RequestStatus.POSTED, RequestStatus.RECEIVED, RequestStatus.QUOTED);
     private final List<RequestStatus> ACCEPTED_STATUSES
@@ -55,13 +54,14 @@ public class RequestService {
     private final List<RequestStatus> STATUSES = new ArrayList<>();
 
     @Autowired
-    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService, NotificationService notificationService) {
+    public RequestService(RequestRepository requestRepository, RepairerRepository repairerRepository, RequestHistoryService requestHistoryService, RequestHistoryRepository requestHistoryRepository, UserService userService, NotificationService notificationService, WalletService walletService) {
         this.requestRepository = requestRepository;
         this.repairerRepository = repairerRepository;
         this.requestHistoryService = requestHistoryService;
         this.requestHistoryRepository = requestHistoryRepository;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.walletService = walletService;
 
         this.STATUSES.addAll(RECENT_STATUSES);
         this.STATUSES.addAll(ACCEPTED_STATUSES);
@@ -203,6 +203,21 @@ public class RequestService {
                 .setBody(message)
                 .build();
         notificationService.pushNotification(Arrays.asList(repairer.getUser().getUsername()), noti, request);
+
+        // refund to quoted repairers
+        requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(requestId, Arrays.asList(ActionStatus.QUOTE))
+                .stream()
+                .filter(h -> !repairerId.equals(h.getRepairer().getUser().getId()))
+                .forEach(h -> {
+            WalletHistory walletHistory = WalletHistory.builder()
+                    .action(WalletHistory.WalletAction.REFUND_QUOTE)
+                    .createAt(LocalDateTime.now())
+                    .xeng(20l)
+                    .note(h.getId().toString())
+                    .wallet(h.getRepairer().getWallet())
+                    .build();
+            walletService.transaction(walletHistory, repairer.getWallet());
+        });
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }

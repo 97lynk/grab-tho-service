@@ -23,6 +23,12 @@ public class GrabThoExceptionHandler {
                 .body(new GrabThoExceptDto("not_exist_object",  ex.getMessage()));
     }
 
+    @ExceptionHandler(TransactionFailedException.class)
+    public ResponseEntity<?> handlingTransactionFailedException(TransactionFailedException ex){
+        return ResponseEntity.badRequest()
+                .body(new GrabThoExceptDto("not_enough_xeng",  ex.getMessage()));
+    }
+
     @Data
     @AllArgsConstructor
     public class GrabThoExceptDto {
