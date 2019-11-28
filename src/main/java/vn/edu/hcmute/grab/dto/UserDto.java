@@ -27,11 +27,15 @@ public class UserDto {
 
     private String avatar;
 
+    private boolean pushNotification;
+
+    private boolean notification;
+
     @Enumerated(EnumType.STRING)
     private List<RoleName> roles;
 
     @Builder
-    public UserDto(Long id, String username, String email, String fullName, String address, String phone, String avatar, List<RoleName> roles) {
+    public UserDto(Long id, String username, String email, String fullName, String address, String phone, String avatar, boolean pushNotification, boolean notification, List<RoleName> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -39,6 +43,8 @@ public class UserDto {
         this.address = address;
         this.phone = phone;
         this.avatar = avatar;
+        this.pushNotification = pushNotification;
+        this.notification = notification;
         this.roles = roles;
     }
 }

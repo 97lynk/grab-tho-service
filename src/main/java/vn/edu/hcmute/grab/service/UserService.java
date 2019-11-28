@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
+import vn.edu.hcmute.grab.dto.SettingDto;
 import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.entity.User;
@@ -43,4 +44,6 @@ public interface UserService {
     void changeAvatar(Long id, byte[] fileBytes);
 
     User updateAvatar(Long id, String avatarUrl);
+
+    User updateSetting(Long id, SettingDto setting);
 }

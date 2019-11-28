@@ -59,6 +59,9 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Repairer repairer;
 
+    @OneToOne(mappedBy = "user")
+    private Setting setting;
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList(
                 roles.stream()

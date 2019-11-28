@@ -4,17 +4,23 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.*;
-import com.google.firebase.messaging.*;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.MulticastMessage;
+import com.google.firebase.messaging.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.dto.NotificationDto;
 import vn.edu.hcmute.grab.entity.Request;
+import vn.edu.hcmute.grab.entity.Setting;
+import vn.edu.hcmute.grab.repository.SettingRepository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,10 +33,13 @@ public class NotificationService {
 
     private DatabaseReference fcmTokensDb;
 
+    private final SettingRepository settingRepository;
+
     private Environment environment;
 
     @Autowired
-    public NotificationService(Environment environment) {
+    public NotificationService(SettingRepository settingRepository, Environment environment) {
+        this.settingRepository = settingRepository;
         this.environment = environment;
 
         ///motel-242404-firebase-adminsdk-wzfw7-338fd655b6.json
@@ -61,11 +70,20 @@ public class NotificationService {
     }
 
     void saveNotification(String username, NotificationDto notification) {
+        Setting setting = settingRepository.findByUserUsername(username).orElse(null);
+        if (setting != null && !setting.isNotification()) return;
         DatabaseReference usersRef = notificationDb.child(username);
         usersRef.push().setValueAsync(notification);
     }
 
     void pushNotification(final List<String> receivers, Notification notification, Request request) {
+        List<String> receiversClone = new ArrayList<>(receivers);
+        List<Setting> settings = settingRepository.findAllByUserUsernameIn(receivers);
+        receiversClone.forEach(r -> {
+            Setting setting = settings.stream().filter(s -> r.equals(s.getUser().getUsername())).findAny().orElse(null);
+            if (setting != null && !setting.isPushNotification()) receivers.remove(r);
+        });
+
         log.info("Send notification to {}", receivers);
         fcmTokensDb.addValueEventListener(new ValueEventListener() {
             @Override

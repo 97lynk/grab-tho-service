@@ -11,11 +11,13 @@ import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
-import vn.edu.hcmute.grab.dto.UserDto;
+import vn.edu.hcmute.grab.dto.SettingDto;
 import vn.edu.hcmute.grab.entity.Role;
+import vn.edu.hcmute.grab.entity.Setting;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.exception.UserException;
 import vn.edu.hcmute.grab.repository.RoleRepository;
+import vn.edu.hcmute.grab.repository.SettingRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
 
 import java.util.Arrays;
@@ -31,11 +33,14 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final SettingRepository settingRepository;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, SettingRepository settingRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.settingRepository = settingRepository;
     }
 
     @Override
@@ -117,6 +122,21 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, User.class.getSimpleName()));
         user.setAvatar(avatarUrl);
         return userRepository.save(user);
+    }
+
+    @Override
+    public User updateSetting(Long id, SettingDto settingDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, User.class.getSimpleName()));
+        Setting setting = settingRepository.findByUserId(id).orElse(new Setting());
+        setting.setNotification(settingDto.isNotification());
+        setting.setPushNotification(settingDto.isPushNotification());
+        if (setting.getUser() == null) {
+            setting.setUser(user);
+        }
+        setting = settingRepository.save(setting);
+
+        user.setSetting(setting);
+        return user;
     }
 
     @Override
