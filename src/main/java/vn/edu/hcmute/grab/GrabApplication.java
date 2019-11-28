@@ -24,7 +24,7 @@ public class GrabApplication implements CommandLineRunner {
     @PostConstruct
     public void init(){
         // Setting Spring Boot SetTimeZone
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
     }
 
     public static void main(String[] args) {
