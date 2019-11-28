@@ -84,7 +84,7 @@ public class RequestHistoryService {
         } else if (historyDto.getAction() == ActionStatus.QUOTE) {
             return quoteRequest(historyDto, request, repairer);
         } else if (historyDto.getAction() == ActionStatus.COMPLETE) {
-            return closeRequest(historyDto, request, repairer);
+            return completeRequest(historyDto, request, repairer);
         }
         return null;
     }
@@ -162,7 +162,7 @@ public class RequestHistoryService {
         return requestHistoryRepository.save(history);
     }
 
-    public RequestHistory closeRequest(HistoryDto historyDto, Request request, Repairer repairer) {
+    public RequestHistory completeRequest(HistoryDto historyDto, Request request, Repairer repairer) {
         RequestHistory history = new RequestHistory();
         history.setCreateAt(LocalDateTime.now());
         history.setPoint(historyDto.getPoint());
@@ -179,13 +179,62 @@ public class RequestHistoryService {
         return requestHistoryRepository.save(history);
     }
 
+    public RequestHistory closeRequest(Long requestId) {
+        Request request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ObjectNotFoundException(requestId, Request.class.getSimpleName()));
+
+        RequestHistory history = new RequestHistory();
+        history.setCreateAt(LocalDateTime.now());
+        history.setPoint(0);
+        history.setStatus(ActionStatus.CLOSE);
+        history.setRepairer(null);
+        history.setRequest(request);
+
+        // add notification
+        String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
+                .path(request.getImagesDescription()[0]).toUriString();
+        String message = String.format("%s đã đóng yêu cầu", request.getUser().getFullName());
+
+        if (request.getStatus() == RequestStatus.ACCEPTED) {
+            NotificationDto notification = NotificationDto.builder()
+                    .seen(false)
+                    .sendAt(new Date().getTime())
+                    .message(message)
+                    .requestId(request.getId())
+                    .action(ActionStatus.CLOSE)
+                    .thumbnail(thumbnail)
+                    .build();
+            notificationService.saveNotificationWithoutSetting(request.getRepairer().getUser().getUsername(), notification);
+
+        } else if (request.getStatus() == RequestStatus.QUOTED) {
+
+            requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(requestId, Arrays.asList(ActionStatus.QUOTE))
+                    .stream().forEach(h -> {
+                NotificationDto notification = NotificationDto.builder()
+                        .seen(false)
+                        .sendAt(new Date().getTime())
+                        .message(message)
+                        .requestId(request.getId())
+                        .action(ActionStatus.CLOSE)
+                        .thumbnail(thumbnail)
+                        .build();
+                notificationService.saveNotificationWithoutSetting(h.getRepairer().getUser().getUsername(), notification);
+            });
+        }
+
+        request.setStatus(RequestStatus.CLOSED);
+        requestRepository.save(request);
+
+        return requestHistoryRepository.save(history);
+    }
+
     public List<Request> getFeedback(String username) {
         List<Request> requests = requestRepository.findAllByUserUsernameAndStatusIn(
                 PageRequest.of(0, 100), username, Arrays.asList(RequestStatus.FEEDBACK)).getContent();
 
         requests.forEach(r -> {
             List<RequestHistory> histories = requestHistoryRepository.findAllByRequestIdAndStatusIsInOrderByCreateAtDesc(r.getId(), Arrays.asList(ActionStatus.FEEDBACK));
-            if(!histories.isEmpty()){
+            if (!histories.isEmpty()) {
                 r.setCreateAt(histories.get(0).getCreateAt());
             }
         });

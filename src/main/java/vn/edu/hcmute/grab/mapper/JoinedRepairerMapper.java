@@ -28,7 +28,8 @@ public interface JoinedRepairerMapper {
 
     default JoinedRepairerDto entityToDtoWithRole(RequestHistory requestHistory) {
         JoinedRepairerDto joinedRepairerDto = entityToDto(requestHistory);
-        joinedRepairerDto.setRoles(requestHistory.getRepairer().getUser().getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        if(requestHistory.getRepairer() != null)
+            joinedRepairerDto.setRoles(requestHistory.getRepairer().getUser().getRoles().stream().map(Role::getName).collect(Collectors.toList()));
         return joinedRepairerDto;
     }
 }

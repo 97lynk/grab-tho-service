@@ -76,6 +76,11 @@ public class NotificationService {
         usersRef.push().setValueAsync(notification);
     }
 
+    void saveNotificationWithoutSetting(String username, NotificationDto notification) {
+        DatabaseReference usersRef = notificationDb.child(username);
+        usersRef.push().setValueAsync(notification);
+    }
+
     void pushNotification(final List<String> receivers, Notification notification, Request request) {
         List<String> receiversClone = new ArrayList<>(receivers);
         List<Setting> settings = settingRepository.findAllByUserUsernameIn(receivers);

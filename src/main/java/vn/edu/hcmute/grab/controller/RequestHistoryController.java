@@ -81,8 +81,16 @@ public class RequestHistoryController {
     @PreAuthorize("hasAnyRole('REPAIRER')")
     public RequestHistoryDto quoteOrReceiveOrClosingRequest(@RequestBody HistoryDto historyDto) {
         log.info("{} request#{}", historyDto.getAction(), historyDto.getRequestId());
-        // TODO the repairer QUOTE, CLOSE request
+        // TODO the repairer QUOTE, COMPLETE request
         return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.addRequestHistory(historyDto));
+    }
+
+    @DeleteMapping("/histories")
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    public RequestHistoryDto closeRequest(@RequestParam("requestId") Long requestId) {
+        log.info("CLOSE request#{}", requestId);
+        // TODO the CLOSE request
+        return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.closeRequest(requestId));
     }
 
     @GetMapping("/histories")
