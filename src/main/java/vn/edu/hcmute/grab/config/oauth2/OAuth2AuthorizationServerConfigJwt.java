@@ -46,10 +46,10 @@ public class OAuth2AuthorizationServerConfigJwt extends AuthorizationServerConfi
     private String ALIAS_PASSWORD;
 
     @Value("${oauth2.client-id}")
-    private String CLIENT_ID;
+    private String[] CLIENT_ID;
 
     @Value("${oauth2.client-secret}")
-    private String CLIENT_SECRET;
+    private String[] CLIENT_SECRET;
 
     @Value("${oauth2.grand-types}")
     private String[] GRANT_TYPES;
@@ -66,7 +66,12 @@ public class OAuth2AuthorizationServerConfigJwt extends AuthorizationServerConfi
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
         //client credential stored in database
-        clients.inMemory().withClient(CLIENT_ID).secret(new BCryptPasswordEncoder().encode(CLIENT_SECRET))
+        clients.inMemory().withClient(CLIENT_ID[0]).secret(new BCryptPasswordEncoder().encode(CLIENT_SECRET[0]))
+                .authorizedGrantTypes(GRANT_TYPES).scopes(SCOPES)
+                .accessTokenValiditySeconds(EXPIRE_ACCESS_TOKEN)
+                .refreshTokenValiditySeconds(EXPIRE_REFRESH_TOKEN)
+        .and()
+                .withClient(CLIENT_ID[1]).secret(new BCryptPasswordEncoder().encode(CLIENT_SECRET[1]))
                 .authorizedGrantTypes(GRANT_TYPES).scopes(SCOPES)
                 .accessTokenValiditySeconds(EXPIRE_ACCESS_TOKEN)
                 .refreshTokenValiditySeconds(EXPIRE_REFRESH_TOKEN)

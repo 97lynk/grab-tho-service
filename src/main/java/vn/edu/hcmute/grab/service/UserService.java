@@ -27,7 +27,7 @@ public interface UserService {
 
     Role selectRoleByName(RoleName name);
 
-    User changePassword(Long id, String newPassword) throws Exception;
+    User changePassword(Long id, String newPassword, String oldPassword, RoleName role) throws Exception;
 
     Page<User> selectPageOfUsersInRoles(Pageable page, List<String> rolesString);
 

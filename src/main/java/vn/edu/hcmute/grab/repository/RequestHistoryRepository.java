@@ -1,5 +1,7 @@
 package vn.edu.hcmute.grab.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import vn.edu.hcmute.grab.constant.ActionStatus;
 import vn.edu.hcmute.grab.entity.RequestHistory;
@@ -18,5 +20,9 @@ public interface RequestHistoryRepository extends JpaRepository<RequestHistory, 
     List<RequestHistory> findByRequestIdInAndRepairerId(List<Long> requestIds, Long repairerId);
 
     List<RequestHistory> findAllByRepairerUserUsernameAndStatusIsIn(String username, List<ActionStatus> actions);
+
+    Page<RequestHistory> findAllByRequestUserIdAndStatusIn(Long id, List<ActionStatus> actions, Pageable pageable);
+
+    Page<RequestHistory> findAllByRepairerUserIdAndStatusIn(Long id, List<ActionStatus> actions, Pageable pageable);
 
 }

@@ -17,15 +17,14 @@ import vn.edu.hcmute.grab.repository.RequestHistoryRepository;
 import vn.edu.hcmute.grab.repository.RequestRepository;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static vn.edu.hcmute.grab.constant.ActionStatus.*;
 import static vn.edu.hcmute.grab.mapper.RequestMapper.REQUEST_MAPPER;
-
 
 @Service
 @Slf4j
@@ -73,6 +72,17 @@ public class RequestService {
         userService.selectUserByUsername(username);
         return requestRepository.findAllByUserUsername(pageable, username)
                 .map(REQUEST_MAPPER::entityToRecentDto);
+    }
+
+    public Page<?> getPageRequestOfRepairer(Pageable pageable, String username) {
+        List<Long> idRequests = requestHistoryRepository.findAllByRepairerUserUsernameAndStatusIsIn(username, Arrays.asList(RECEIVE, QUOTE, COMPLETE))
+                .stream().map(RequestHistory::getRequest)
+                .map(Request::getId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return requestRepository.findAllByIdIn(pageable, idRequests)
+                .map(REQUEST_MAPPER::entityToDto);
     }
 
     private Request getRequestById(Long id, String username) {
@@ -131,6 +141,14 @@ public class RequestService {
         request.setPoint(0l);
 
         request = requestRepository.save(request);
+
+        RequestHistory history = new RequestHistory();
+        history.setPoint(0l);
+        history.setRepairer(null);
+        history.setRequest(request);
+        history.setStatus(ActionStatus.POST);
+        history.setCreateAt(LocalDateTime.now());
+        requestHistoryRepository.save(history);
 
         List<String> receivers = repairerRepository.findAll().stream()
                 .map(Repairer::getUser)
@@ -210,15 +228,15 @@ public class RequestService {
                 .stream()
                 .filter(h -> !repairerId.equals(h.getRepairer().getUser().getId()))
                 .forEach(h -> {
-            WalletHistory walletHistory = WalletHistory.builder()
-                    .action(WalletHistory.WalletAction.REFUND_QUOTE)
-                    .createAt(LocalDateTime.now())
-                    .xeng(20l)
-                    .note(h.getId().toString())
-                    .wallet(h.getRepairer().getWallet())
-                    .build();
-            walletService.transaction(walletHistory, repairer.getWallet());
-        });
+                    WalletHistory walletHistory = WalletHistory.builder()
+                            .action(WalletHistory.WalletAction.REFUND_QUOTE)
+                            .createAt(LocalDateTime.now())
+                            .xeng(20l)
+                            .note(h.getId().toString())
+                            .wallet(h.getRepairer().getWallet())
+                            .build();
+                    walletService.transaction(walletHistory, repairer.getWallet());
+                });
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));
     }

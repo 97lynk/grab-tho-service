@@ -16,6 +16,7 @@ import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.entity.Setting;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.exception.UserException;
+import vn.edu.hcmute.grab.exception.WrongPasswordException;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.repository.SettingRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
@@ -55,11 +56,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changePassword(Long id, String newPassword) throws Exception {
+    public User changePassword(Long id, String newPassword, String oldPassword, RoleName role) throws Exception {
         User user = selectUserById(id);
 
-//        if (!passwordEncoder.matches(oldPassword, user.getPassword()))
-//            throw new WrongPasswordException("Mật khẩu không đúng");
+        if (role.equals(RoleName.ROLE_CUSTOMER) || role.equals(RoleName.ROLE_REPAIRER)) {
+            if (!passwordEncoder.matches(oldPassword, user.getPassword()))
+                throw new WrongPasswordException("Mật khẩu không đúng");
+        }
+
         user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
 
         return userRepository.save(user);
@@ -94,9 +98,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registration(RegisterDto registerDto) {
-        userRepository.findByEmail(registerDto.getEmail()).ifPresent((user) -> {
-            throw new UserException("Email đã được đăng kí tài khoản khác");
-        });
         userRepository.findByUsername(registerDto.getUsername()).ifPresent((user) -> {
             throw new UserException("Tài khoản đã tồn tại");
         });
@@ -104,9 +105,15 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(registerDto.getEmail());
         user.setUsername(registerDto.getUsername());
+        user.setFullName(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setRoles(Arrays.asList(selectRoleByName(RoleName.ROLE_CUSTOMER)));
+        // public register
+        if (registerDto.getRoleName() == null){
+            registerDto.setRoleName(RoleName.ROLE_CUSTOMER);
+        }
+        user.setRoles(Arrays.asList(selectRoleByName(registerDto.getRoleName())));
         user.setAvatar("http://tinygraphs.com/isogrids/tinygraphs?theme=frogideas&numcolors=2&size=220&fmt=svg");
+
         return userRepository.save(user);
     }
 
@@ -148,5 +155,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(profileDto.getEmail());
         return userRepository.save(user);
     }
+
 
 }

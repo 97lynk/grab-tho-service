@@ -1,5 +1,6 @@
 package vn.edu.hcmute.grab.config.social.facebook;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,8 @@ import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
+
+import java.util.Arrays;
 
 @Service
 @Slf4j
@@ -28,7 +31,7 @@ public class FacebookConnectionSignup implements ConnectionSignUp {
                 .username(connection.getKey().getProviderUserId())
                 .password(new BCryptPasswordEncoder().encode("tuan"))
                 .fullName(connection.getDisplayName())
-                .roles(roleRepository.findAllByName(RoleName.ROLE_CUSTOMER))
+                .roles(roleRepository.findAllByNameIn(Arrays.asList(RoleName.ROLE_CUSTOMER, RoleName.ROLE_FB)))
                 .avatar(connection.getImageUrl())
                 .block(false)
                 .build();

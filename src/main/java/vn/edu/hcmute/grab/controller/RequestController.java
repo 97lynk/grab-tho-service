@@ -116,7 +116,7 @@ public class RequestController {
      * @return
      */
     @PostMapping("/description-images")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER', 'ADMIN', 'MOD')")
     public ResponseEntity<?> uploadFile(@RequestParam(value = "images", defaultValue = "[]") List<MultipartFile> files) {
         log.info("UPLOAD {} images", files.size());
         List<String> urlImages = files.stream()

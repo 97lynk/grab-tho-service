@@ -41,5 +41,9 @@ public class GrabApplication implements CommandLineRunner {
             roleRepository.save(Role.builder().name(RoleName.ROLE_CUSTOMER).build());
         if(!roleRepository.existsByName(RoleName.ROLE_REPAIRER))
             roleRepository.save(Role.builder().name(RoleName.ROLE_REPAIRER).build());
+        if(!roleRepository.existsByName(RoleName.ROLE_ADMIN))
+            roleRepository.save(Role.builder().name(RoleName.ROLE_ADMIN).build());
+        if(!roleRepository.existsByName(RoleName.ROLE_FB))
+            roleRepository.save(Role.builder().name(RoleName.ROLE_FB).build());
     }
 }

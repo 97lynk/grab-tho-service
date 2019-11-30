@@ -32,8 +32,8 @@ spring:
 
 #============= OAuth2 config ====================
 oauth2:
-  client-id: clientIdPassword
-  client-secret: 123
+  client-id: clientIdPassword,managementClient
+  client-secret: 123,333
   grand-types: password,refresh_token,authorization_code
   scopes: read
   access-token-expire-in: 3600

@@ -58,7 +58,7 @@ public class RepairerController {
 
 
     @GetMapping("/{id}/requests")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER', 'ADMIN')")
     public Page<?> getAllRequestOfUser(@PathVariable("id") Long id,
                                        @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable,
                                        @RequestParam(value = "status", defaultValue = "") List<RequestStatus> statuses,

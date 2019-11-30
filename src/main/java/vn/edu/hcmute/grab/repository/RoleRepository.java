@@ -14,5 +14,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     boolean existsByName(RoleName roleName);
 
-    List<Role> findAllByName(RoleName roleName);
+    List<Role> findAllByNameIn(List<RoleName> roleNames);
 }
