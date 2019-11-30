@@ -1,6 +1,5 @@
 package vn.edu.hcmute.grab.controller;
 
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
@@ -23,11 +21,8 @@ import vn.edu.hcmute.grab.entity.User;
 import vn.edu.hcmute.grab.repository.SettingRepository;
 import vn.edu.hcmute.grab.service.UserService;
 
-import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static vn.edu.hcmute.grab.mapper.UserMapper.USER_MAPPER;
 

@@ -2,10 +2,8 @@ package vn.edu.hcmute.grab.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.edu.hcmute.grab.constant.ActionStatus;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

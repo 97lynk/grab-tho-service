@@ -12,7 +12,6 @@ import vn.edu.hcmute.grab.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static vn.edu.hcmute.grab.mapper.UserMapper.USER_MAPPER;
 

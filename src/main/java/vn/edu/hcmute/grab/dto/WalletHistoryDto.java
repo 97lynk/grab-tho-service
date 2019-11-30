@@ -2,10 +2,10 @@ package vn.edu.hcmute.grab.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.edu.hcmute.grab.entity.Wallet;
 import vn.edu.hcmute.grab.entity.WalletHistory;
 
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @Data

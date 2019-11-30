@@ -11,7 +11,6 @@ import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.SettingDto;
-import vn.edu.hcmute.grab.dto.UserDto;
 import vn.edu.hcmute.grab.entity.Role;
 import vn.edu.hcmute.grab.entity.User;
 
