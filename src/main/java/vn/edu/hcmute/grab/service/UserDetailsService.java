@@ -27,8 +27,6 @@ public class UserDetailsService implements org.springframework.security.core.use
     @Value("${oauth2.client-id}")
     private String[] CLIENT_ID;
 
-    private final List<RoleName> MANAGEMENT_ROLE = Arrays.asList(RoleName.ROLE_ADMIN, RoleName.ROLE_MOD);
-
     @Autowired
     public UserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -44,7 +42,11 @@ public class UserDetailsService implements org.springframework.security.core.use
 
         String clientId = SecurityContextHolder.getContext().getAuthentication().getName();
         List<RoleName> roles = account.getRoles().stream().map(Role::getName).collect(Collectors.toList());
-        if (clientId.equals(CLIENT_ID[1]) && !MANAGEMENT_ROLE.containsAll(roles)) {
+        if (clientId.equals(CLIENT_ID[1]) && !roles.contains(RoleName.ROLE_ADMIN)) {
+            throw new UsernameNotFoundException(String.format("Not found user with username=%s", userName));
+        }
+
+        if (clientId.equals(CLIENT_ID[0]) && roles.contains(RoleName.ROLE_ADMIN)) {
             throw new UsernameNotFoundException(String.format("Not found user with username=%s", userName));
         }
         log.info(account.toString());
