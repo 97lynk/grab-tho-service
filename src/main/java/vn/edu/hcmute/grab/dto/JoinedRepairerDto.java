@@ -39,9 +39,11 @@ public class JoinedRepairerDto {
 
     private LocalDateTime createAt;
 
+    private Boolean hide = false;
+
     @Builder
     public JoinedRepairerDto(Long id, String username, String email, String fullName, String address, String phone,
-                             String avatar, List<RoleName> roles, ActionStatus status, long point, LocalDateTime createAt) {
+                             String avatar, List<RoleName> roles, ActionStatus status, long point, LocalDateTime createAt, Boolean hide) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -53,5 +55,6 @@ public class JoinedRepairerDto {
         this.status = status;
         this.point = point;
         this.createAt = createAt;
+        this.hide = hide;
     }
 }

@@ -31,4 +31,6 @@ public class RequestHistory {
     @ManyToOne
     @JoinColumn(name = "repairer_id")
     private Repairer repairer;
+
+    private Boolean hide = false;
 }

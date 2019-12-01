@@ -13,6 +13,7 @@ import vn.edu.hcmute.grab.constant.RequestStatus;
 import vn.edu.hcmute.grab.dto.HistoryDto;
 import vn.edu.hcmute.grab.dto.JoinedRepairerDto;
 import vn.edu.hcmute.grab.dto.NotificationDto;
+import vn.edu.hcmute.grab.dto.RequestHistoryDto;
 import vn.edu.hcmute.grab.entity.Repairer;
 import vn.edu.hcmute.grab.entity.Request;
 import vn.edu.hcmute.grab.entity.RequestHistory;
@@ -256,5 +257,12 @@ public class RequestHistoryService {
 
     public Page<RequestHistory> getRepairerHistory(Long userId, List<ActionStatus> statuses, Pageable pageable) {
         return this.requestHistoryRepository.findAllByRepairerUserIdAndStatusIn(userId, statuses, pageable);
+    }
+
+    public RequestHistory hide(Long historyId, boolean hide) {
+        RequestHistory history = requestHistoryRepository.findById(historyId)
+                .orElseThrow(() -> new ObjectNotFoundException(historyId, RequestHistory.class.getSimpleName()));
+        history.setHide(hide);
+        return requestHistoryRepository.save(history);
     }
 }

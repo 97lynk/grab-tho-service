@@ -84,9 +84,9 @@ public class NotificationService {
     void pushNotification(final List<String> receivers, Notification notification, Request request) {
         List<String> receiversClone = new ArrayList<>(receivers);
         List<Setting> settings = settingRepository.findAllByUserUsernameIn(receivers);
-        receiversClone.forEach(r -> {
+        receivers.forEach(r -> {
             Setting setting = settings.stream().filter(s -> r.equals(s.getUser().getUsername())).findAny().orElse(null);
-            if (setting != null && !setting.isPushNotification()) receivers.remove(r);
+            if (setting != null && !setting.isPushNotification()) receiversClone.remove(r);
         });
 
         log.info("Send notification to {}", receivers);
@@ -97,7 +97,7 @@ public class NotificationService {
                 Map<String, String> fcmTokens = (Map<String, String>) snapshot.getValue();
                 // filtering tokens of receivers
                 List<String> tokens = fcmTokens.entrySet().stream()
-                        .filter(t -> receivers.contains(t.getKey()))
+                        .filter(t -> receiversClone.contains(t.getKey()))
                         .map(Map.Entry::getValue)
                         .distinct()
                         .collect(Collectors.toList());
@@ -110,7 +110,7 @@ public class NotificationService {
 
                 try {
                     FirebaseMessaging.getInstance().sendMulticast(message);
-                    log.info("Sent notification success {}/{}", tokens.size(), receivers.size());
+                    log.info("Sent notification success {}/{}", tokens.size(), receiversClone.size());
                 } catch (FirebaseMessagingException e) {
                     e.printStackTrace();
                 }

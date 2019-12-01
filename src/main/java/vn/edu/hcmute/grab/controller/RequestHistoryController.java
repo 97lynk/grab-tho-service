@@ -42,13 +42,13 @@ public class RequestHistoryController {
      * @return
      */
     @GetMapping("/requests/{id}/histories/repairers")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'REPAIRER', 'ADMIN')")
     public List<JoinedRepairerDto> getAllRepairersReceivedRequest(
             @PathVariable("id") Long requestId,
             @RequestParam(value = "actions", defaultValue = "") List<ActionStatus> actions,
             Authentication auth) {
         log.info("GET repairers of request#{} with actions={}", requestId, actions);
-        return requestHistoryService.getRepairerJoinedRequest(requestId, actions, (isCustomer(auth) ? null : auth.getName()));
+        return requestHistoryService.getRepairerJoinedRequest(requestId, actions, (isCustomer(auth) || isAdmin(auth) ? null : auth.getName()));
     }
 
     @GetMapping("/requests/{requestId}/histories/repairers/{repairerId}")
@@ -115,6 +115,17 @@ public class RequestHistoryController {
     private boolean isCustomer(Authentication auth) {
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals(RoleName.ROLE_CUSTOMER.name()));
+    }
+
+    private boolean isAdmin(Authentication auth) {
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(RoleName.ROLE_ADMIN.name()));
+    }
+
+    @PutMapping("/histories/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public RequestHistoryDto hideHistory(@PathVariable("id") Long historyId, @RequestParam boolean hide) {
+        return REQUEST_HISTORY_MAPPER.entityToDto(requestHistoryService.hide(historyId, hide));
     }
 
 }
