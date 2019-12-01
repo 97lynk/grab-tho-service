@@ -17,6 +17,8 @@ public class JoinedRepairerDto {
 
     private Long id;
 
+    private Long uid;
+
     private String username;
 
     private String email;
@@ -42,9 +44,11 @@ public class JoinedRepairerDto {
     private Boolean hide = false;
 
     @Builder
-    public JoinedRepairerDto(Long id, String username, String email, String fullName, String address, String phone,
-                             String avatar, List<RoleName> roles, ActionStatus status, long point, LocalDateTime createAt, Boolean hide) {
+    public JoinedRepairerDto(Long id, Long uid, String username, String email, String fullName, String address,
+                             String phone, String avatar, List<RoleName> roles, ActionStatus status, long point,
+                             LocalDateTime createAt, Boolean hide) {
         this.id = id;
+        this.uid = uid;
         this.username = username;
         this.email = email;
         this.fullName = fullName;
