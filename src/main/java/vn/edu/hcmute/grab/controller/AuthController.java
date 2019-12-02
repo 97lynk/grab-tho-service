@@ -31,7 +31,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-public class AuhController {
+public class AuthController {
 
     private final UserRepository userRepository;
 
@@ -46,9 +46,9 @@ public class AuhController {
     private final String access_token;
 
     @Autowired
-    public AuhController(UserRepository userRepository, AuthService authService, UsersConnectionRepository usersConnectionRepository,
-                         ConnectionFactoryLocator connectionFactoryLocator, FacebookConnectionSignup facebookConnectionSignup,
-                         @Value("${facebook.access-token}") String access_token) {
+    public AuthController(UserRepository userRepository, AuthService authService, UsersConnectionRepository usersConnectionRepository,
+                          ConnectionFactoryLocator connectionFactoryLocator, FacebookConnectionSignup facebookConnectionSignup,
+                          @Value("${facebook.access-token}") String access_token) {
         this.access_token = access_token;
         this.userRepository = userRepository;
         this.authService = authService;

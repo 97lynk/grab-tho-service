@@ -3,6 +3,8 @@ package vn.edu.hcmute.grab.service;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmute.grab.entity.Repairer;
 import vn.edu.hcmute.grab.entity.Wallet;
@@ -34,6 +36,10 @@ public class WalletService {
                 .orElseThrow(() -> new ObjectNotFoundException(repairerId, Repairer.class.getSimpleName()));
 
         return walletHistoryRepository.findAllByWalletIdOrderByCreateAtDesc(repairer.getWallet().getId());
+    }
+
+    public Page<WalletHistory> getPageOfWalletHistories(Pageable pageable) {
+        return walletHistoryRepository.findAll(pageable);
     }
 
     public WalletHistory transaction(WalletHistory history, Wallet wallet) {

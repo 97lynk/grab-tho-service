@@ -18,6 +18,8 @@ public class WalletHistoryDto {
 
     private Long walletId;
 
+    private RepairerDto repairer;
+
     private LocalDateTime createAt;
 
     @Enumerated(EnumType.STRING)

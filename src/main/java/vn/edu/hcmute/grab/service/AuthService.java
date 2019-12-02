@@ -34,10 +34,10 @@ public class AuthService {
     ;
 
     @Autowired
-    public AuthService(@Value("${oauth2.client-id}") String clientId,
-                       @Value("${oauth2.client-secret}") String clientSecret) {
-        CLIENT_ID = clientId;
-        CLIENT_SECRET = clientSecret;
+    public AuthService(@Value("${oauth2.client-id}") String[] clientId,
+                       @Value("${oauth2.client-secret}") String[] clientSecret) {
+        CLIENT_ID = clientId[0];
+        CLIENT_SECRET = clientSecret[0];
     }
 
     public OAuth2AccessToken obtainAccessToken(String username) {
