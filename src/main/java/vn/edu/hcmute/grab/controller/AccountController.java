@@ -119,15 +119,15 @@ public class AccountController {
                                        @RequestParam("password") String newPassword,
                                        @RequestParam(value = "oldPassword", defaultValue = "") String oldPassword,
                                        OAuth2Authentication auth) throws Exception {
-        RoleName role;
-        if (!validRequest(auth, id)) throw new AccessDeniedException("Access dined");
-        User authUser = userService.selectUserByUsername(auth.getName());
-        if (authUser.getRoles().stream().map(Role::getName).anyMatch(roleName -> roleName == RoleName.ROLE_ADMIN)) {
-            role = RoleName.ROLE_ADMIN;
-        } else {
-            role = RoleName.ROLE_CUSTOMER;
-        }
-        User user = userService.changePassword(id, newPassword, oldPassword, role);
+//        RoleName role;
+//        if (!validRequest(auth, id)) throw new AccessDeniedException("Access dined");
+//        User authUser = userService.selectUserByUsername(auth.getName());
+//        if (authUser.getRoles().stream().map(Role::getName).anyMatch(roleName -> roleName == RoleName.ROLE_ADMIN)) {
+//            role = RoleName.ROLE_ADMIN;
+//        } else {
+//            role = RoleName.ROLE_CUSTOMER;
+//        }
+        User user = userService.changePassword(id, newPassword, oldPassword, RoleName.ROLE_ADMIN);
 
         return USER_MAPPER.entityToDTO(user);
     }

@@ -164,7 +164,7 @@ public class RequestService {
                 .message(message)
                 .requestId(request.getId())
                 .action(ActionStatus.POST)
-                .thumbnail(user.getAvatar())
+                .thumbnail(request.getImagesDescription()[0])
                 .build();
 
         receivers.forEach(u -> notificationService.saveNotification(u, notification));
@@ -235,7 +235,7 @@ public class RequestService {
                             .note(h.getId().toString())
                             .wallet(h.getRepairer().getWallet())
                             .build();
-                    walletService.transaction(walletHistory, repairer.getWallet());
+                    walletService.transaction(walletHistory, h.getRepairer().getWallet());
                 });
 
         return REQUEST_MAPPER.entityToDto(requestRepository.save(request));

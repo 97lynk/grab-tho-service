@@ -12,11 +12,10 @@ import vn.edu.hcmute.grab.constant.RoleName;
 import vn.edu.hcmute.grab.dto.ProfileDto;
 import vn.edu.hcmute.grab.dto.RegisterDto;
 import vn.edu.hcmute.grab.dto.SettingDto;
-import vn.edu.hcmute.grab.entity.Role;
-import vn.edu.hcmute.grab.entity.Setting;
-import vn.edu.hcmute.grab.entity.User;
+import vn.edu.hcmute.grab.entity.*;
 import vn.edu.hcmute.grab.exception.UserException;
 import vn.edu.hcmute.grab.exception.WrongPasswordException;
+import vn.edu.hcmute.grab.repository.RepairerRepository;
 import vn.edu.hcmute.grab.repository.RoleRepository;
 import vn.edu.hcmute.grab.repository.SettingRepository;
 import vn.edu.hcmute.grab.repository.UserRepository;
@@ -36,12 +35,15 @@ public class UserServiceImpl implements UserService {
 
     private final SettingRepository settingRepository;
 
+    private final RepairerRepository repairerRepository;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, SettingRepository settingRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, SettingRepository settingRepository, RepairerRepository repairerRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.settingRepository = settingRepository;
+        this.repairerRepository = repairerRepository;
     }
 
     @Override
@@ -105,16 +107,42 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(registerDto.getEmail());
         user.setUsername(registerDto.getUsername());
-        user.setFullName(registerDto.getUsername());
+        if (registerDto.getFullName() == null || registerDto.getFullName().isEmpty()) {
+            user.setFullName(registerDto.getUsername());
+        } else {
+            user.setFullName(registerDto.getFullName());
+        }
+        user.setAddress(registerDto.getAddress());
+        user.setPhone(registerDto.getPhone());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         // public register
-        if (registerDto.getRoleName() == null){
-            registerDto.setRoleName(RoleName.ROLE_CUSTOMER);
+        if (registerDto.getRole() == null) {
+            registerDto.setRole(RoleName.ROLE_CUSTOMER);
         }
-        user.setRoles(Arrays.asList(selectRoleByName(registerDto.getRoleName())));
+        user.setRoles(Arrays.asList(selectRoleByName(registerDto.getRole())));
         user.setAvatar("http://tinygraphs.com/isogrids/tinygraphs?theme=frogideas&numcolors=2&size=220&fmt=svg");
+        Setting setting = new Setting();
+        setting.setNotification(true);
+        setting.setPushNotification(true);
+        setting = settingRepository.save(setting);
+        user.setSetting(setting);
 
-        return userRepository.save(user);
+        if (registerDto.getRole() == RoleName.ROLE_REPAIRER) {
+            Wallet wallet = new Wallet();
+            wallet.setXeng(0l);
+
+            Repairer repairer = new Repairer();
+            repairer.setMajor(registerDto.getMajor());
+            repairer.setCompletedJob(0l);
+            repairer.setReviews(0l);
+            repairer.setRating(0.0f);
+            repairer.setWallet(wallet);
+            repairer.setUser(user);
+            repairer = repairerRepository.save(repairer);
+            return repairer.getUser();
+        }else {
+            return userRepository.save(user);
+        }
     }
 
     @Override

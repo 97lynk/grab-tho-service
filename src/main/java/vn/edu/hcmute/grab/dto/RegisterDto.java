@@ -14,5 +14,14 @@ public class RegisterDto {
 
     private String email;
 
-    private RoleName roleName;
+    private RoleName role;
+
+    private String fullName;
+
+    private String phone;
+
+    private String address;
+
+    private String major;
+
 }

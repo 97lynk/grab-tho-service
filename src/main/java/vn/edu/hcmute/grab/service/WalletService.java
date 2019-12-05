@@ -50,7 +50,7 @@ public class WalletService {
 
         history = walletHistoryRepository.save(history);
         wallet.setXeng(xeng);
-        walletRepository.save(wallet);
+        walletRepository.saveAndFlush(wallet);
         return history;
     }
 }
