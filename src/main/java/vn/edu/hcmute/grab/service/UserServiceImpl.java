@@ -137,6 +137,7 @@ public class UserServiceImpl implements UserService {
             repairer.setReviews(0l);
             repairer.setRating(0.0f);
             repairer.setWallet(wallet);
+            wallet.setRepairer(repairer);
             repairer.setUser(user);
             repairer = repairerRepository.save(repairer);
             return repairer.getUser();
