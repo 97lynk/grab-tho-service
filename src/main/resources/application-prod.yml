@@ -41,20 +41,20 @@ oauth2:
 
 #=========== Java Key Store config ===============
 key:
-  file-name: kt3key.jks
-  file-password: hdkey@
-  alias: oauth2
-  alias-password: hdkt3!
+  file-name: 'kt3key.jks'
+  file-password: 'hdkey@'
+  alias: 'oauth2'
+  alias-password: 'hdkt3!'
 
-spring.social.facebook.appId: 548596522582041
-spring.social.facebook.appSecret: 0bcd0685c74331223d47294185d01157
-facebook.access-token: EAAFxVFqLyk0BAI7RhemWyZA3vcerBxR6fDwML659EFc8ivkZBkfNuLHRyE6E7gHUzZBcnRxJigUq9ztpG33PkGSv6flmjXnKyRXGO760RZCOkbbKCVC8ELSVkVRyz8ZBIUwBuMvYT0XXY23dFt4VMayBzgWm7ok9HpUWyDYhZAQfOkunW6xzzv
+spring.social.facebook.appId: '548596522582041'
+spring.social.facebook.appSecret: '0bcd0685c74331223d47294185d01157'
+facebook.access-token: 'EAAFxVFqLyk0BAI7RhemWyZA3vcerBxR6fDwML659EFc8ivkZBkfNuLHRyE6E7gHUzZBcnRxJigUq9ztpG33PkGSv6flmjXnKyRXGO760RZCOkbbKCVC8ELSVkVRyz8ZBIUwBuMvYT0XXY23dFt4VMayBzgWm7ok9HpUWyDYhZAQfOkunW6xzzv'
 server.host: 'https://grabtho.tk'
 
 server:
   ssl:
-    key-store-type: JKS
-    key-store: classpath:grab-tho-ssl.jks
-    key-store-password: grabThoGrabtho
-    key-alias: 1
-    key-password: GrabGrabThoTho
+    key-store-type: 'JKS'
+    key-store: 'classpath:grab-tho-ssl.jks'
+    key-store-password: 'grabThoGrabtho'
+    key-alias: '1'
+    key-password: 'GrabGrabThoTho'
