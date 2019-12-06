@@ -26,7 +26,6 @@ import java.util.Optional;
 import static vn.edu.hcmute.grab.mapper.UserMapper.USER_MAPPER;
 
 @RestController
-@RequestMapping("/accounts")
 @Slf4j
 public class AccountController {
 
@@ -40,7 +39,7 @@ public class AccountController {
         this.settingRepository = settingRepository;
     }
 
-    @RequestMapping("/me")
+    @RequestMapping("/accounts/me")
     public UserDto getMyInfo(Authentication auth) {
         log.info("GET profile {}", auth.getName());
         User user = userService.selectUserByUsername(auth.getName());
@@ -58,45 +57,45 @@ public class AccountController {
         return userDto;
     }
 
-    @PostMapping("/signup")
-    public UserDto registerAccount(@RequestBody RegisterDto registerDto, Authentication auth) {
+    @PostMapping("/accounts-signup")
+    public UserDto registerAccount(@RequestBody RegisterDto registerDto) {
         User user = userService.registration(registerDto);
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/accounts/{id}")
     public UserDto updateProfile(@PathVariable("id") Long id, @RequestBody ProfileDto profileDto) {
         log.info("PUT user#{} {}", id, profileDto);
         return USER_MAPPER.entityToDTOWithRoles(userService.updateProfile(id, profileDto));
     }
 
-    @PutMapping("/{id}/avatar")
+    @PutMapping("/accounts/{id}/avatar")
     public UserDto updateAvatar(@PathVariable("id") Long id, @RequestBody String avatarUrl) {
         log.info("PUT avatar user#{} {}", id, avatarUrl);
         return USER_MAPPER.entityToDTOWithRoles(userService.updateAvatar(id, avatarUrl));
     }
 
-    @PutMapping("/{id}/setting")
+    @PutMapping("/accounts/{id}/setting")
     public UserDto updateSetting(@PathVariable("id") Long id, @RequestBody SettingDto setting) {
         log.info("PUT setting user#{} {}", id, setting);
         return USER_MAPPER.entityToDTOWithRoles(userService.updateSetting(id, setting));
     }
 
-    @GetMapping
+    @GetMapping("/accounts")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')") // only ADMIN can get list users
     public Page<UserDto> getAlLUser(@PageableDefault(page = 0, size = 10) Pageable page,
                                     @RequestParam(value = "role", defaultValue = "") List<String> roles) {
         return userService.selectPageOfUsersInRoles(page, roles).map(USER_MAPPER::entityToDTOWithRoles);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/accounts/{id}")
     public UserDto getUser(@PathVariable("id") Long id) {
         User user = userService.selectUserById(id);
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 
 
-    @PutMapping("/{id}/block")
+    @PutMapping("/accounts/{id}/block")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public UserDto blockUser(@PathVariable("id") Long id) {
         User user = userService.blockUserById(id, true);
@@ -104,14 +103,14 @@ public class AccountController {
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 
-    @PutMapping("/{id}/unblock")
+    @PutMapping("/accounts/{id}/unblock")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public UserDto unblockUser(@PathVariable("id") Long id) {
         User user = userService.blockUserById(id, false);
         return USER_MAPPER.entityToDTOWithRoles(user);
     }
 
-    @PostMapping("/{id}/password")
+    @PostMapping("/accounts/{id}/password")
     @PreAuthorize("#oauth2.hasAnyScope('read')") // for authenticated request (logged)
     public UserDto changePasswordAUser(@PathVariable("id") Long id,
                                        @RequestParam("password") String newPassword,
@@ -130,12 +129,12 @@ public class AccountController {
         return USER_MAPPER.entityToDTO(user);
     }
 
-    @GetMapping("/check")
+    @GetMapping("/accounts/check")
     public boolean checkExistUser(@RequestParam("email") String email) {
         return (userService.selectUserByUsername(email) != null);
     }
 
-    @PutMapping("/{id}/role")
+    @PutMapping("/accounts/{id}/role")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public UserDto changeRole(@PathVariable("id") Long id,
                               @RequestBody List<RoleName> role) {

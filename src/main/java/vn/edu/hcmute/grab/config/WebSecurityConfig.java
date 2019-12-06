@@ -73,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*", "/signin/**", "/signup/**", "/index/**", "/oauth/authorize/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/oauth/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/tokens").permitAll()
-                .antMatchers(HttpMethod.POST, "/accounts").permitAll()
+                .antMatchers(HttpMethod.POST, "/accounts-signup").permitAll()
                 .and().csrf().disable();
     }
 
