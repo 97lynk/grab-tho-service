@@ -58,7 +58,7 @@ public class AccountController {
         return userDto;
     }
 
-    @PostMapping
+    @PostMapping("/signup")
     public UserDto registerAccount(@RequestBody RegisterDto registerDto, Authentication auth) {
         User user = userService.registration(registerDto);
         return USER_MAPPER.entityToDTOWithRoles(user);
