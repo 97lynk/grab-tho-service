@@ -156,6 +156,8 @@ public class RequestService {
                 .collect(Collectors.toList());
 
         // add notification
+        String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
+                .path(request.getImagesDescription()[0]).toUriString();
         String message = String.format("%s vừa mới gửi yêu cầu mới", user.getFullName());
         Date now = new Date();
         NotificationDto notification = NotificationDto.builder()
@@ -164,7 +166,7 @@ public class RequestService {
                 .message(message)
                 .requestId(request.getId())
                 .action(ActionStatus.POST)
-                .thumbnail(request.getImagesDescription()[0])
+                .thumbnail(thumbnail)
                 .build();
 
         receivers.forEach(u -> notificationService.saveNotification(u, notification));

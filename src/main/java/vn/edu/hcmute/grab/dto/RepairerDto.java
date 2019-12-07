@@ -32,4 +32,6 @@ public class RepairerDto {
     private long completedJob = 0l;
 
     private long xeng;
+
+    private Long uid;
 }
