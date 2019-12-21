@@ -173,7 +173,7 @@ public class RequestService {
 
         // push notification
         Notification noti = Notification.builder()
-                .setImage(user.getAvatar())
+                .setImage(thumbnail)
                 .setTitle("Yêu cầu mới")
                 .setBody(message)
                 .build();
