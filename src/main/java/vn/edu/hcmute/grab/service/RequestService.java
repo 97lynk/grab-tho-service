@@ -158,7 +158,7 @@ public class RequestService {
         // add notification
         String thumbnail = ServletUriComponentsBuilder.fromCurrentContextPath().path("/requests/description-images/")
                 .path(request.getImagesDescription()[0]).toUriString();
-        String message = String.format("%s vừa mới gửi yêu cầu mới", user.getFullName());
+        String message = String.format("%s vừa gửi yêu cầu mới", user.getFullName());
         Date now = new Date();
         NotificationDto notification = NotificationDto.builder()
                 .seen(false)
