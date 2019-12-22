@@ -31,6 +31,10 @@ public class JoinedRepairerDto {
 
     private String avatar;
 
+    private String major;
+
+    private float rate;
+
     @Enumerated(EnumType.STRING)
     private List<RoleName> roles;
 
