@@ -23,6 +23,7 @@ public interface JoinedRepairerMapper {
             @Mapping(source = "repairer.user.phone", target = "phone"),
             @Mapping(source = "repairer.user.avatar", target = "avatar"),
             @Mapping(source = "repairer.major", target = "major"),
+            @Mapping(source = "repairer.user.id", target = "uid"),
             @Mapping(source = "repairer.rating", target = "rate")
     })
     JoinedRepairerDto entityToDto(RequestHistory requestHistory);
