@@ -86,7 +86,7 @@ public class RequestHistoryController {
     }
 
     @DeleteMapping("/histories")
-    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public RequestHistoryDto closeRequest(@RequestParam("requestId") Long requestId) {
         log.info("CLOSE request#{}", requestId);
         // TODO the CLOSE request
